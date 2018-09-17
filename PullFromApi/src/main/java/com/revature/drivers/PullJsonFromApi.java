@@ -10,16 +10,36 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.HashSet;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+
+/** This is a program that pulls json from an api, and saves it to a json file. 
+ * The various parameters of the program can be changed by modifying several of 
+ * the provided constants. */
 public class PullJsonFromApi {
 	
 	
 	/** The location to save the resulting json to. */
 	private static String OUTPUT_FILE = 
 			"C:\\Users\\David\\Desktop\\Dev Environments\\gitStuff"
-			+ "\\Revature\\project2\\heroes.json";
+			+ "\\Revature\\project2\\heroes12.json";
+	
+	
+	
+	/** The name of the response field in the json. Used to tell if the 
+	 * request was successful. */
+	private static final String RESPONSE_TEXT = "response";
+	
+	/** The response value from the API upon a successful request. */
+	private static final String HERO_SUCCESS = "success";
+	
+	/** The starting hero ID to use. */
+	private static final int STARTING_ID = 1;
+	
+	/** A list of hero ID's that don't return anything. Therefore skip them. */
+	private static final int[] BAD_IDS = {132, 173, 368};
 	
 	
 	
@@ -34,15 +54,16 @@ public class PullJsonFromApi {
 	/** Returns the string that begins the parameter list, if applicable. */
 	public static final String PARAMETER_PREFIX = "/";
 	
-	/** The parameters for the search. Uses a question mark where a parameter 
-	 * should be replaced at runtime. */
-	public static final String PARAMETERS = "?";
+	
 	
 	/** The maximum number of retries that getJSON will make when attempting 
 	 * to connect to the API. */
 	private static final int MAX_RETRIES = 3;
 	
 	
+	/** The maximum number of requests per minute. Used to get by rate limits.
+	 * Not an exact metric, only a good approximate. */
+	private static final int MAX_REQUESTS_PER_MIN = 19;
 	
 	
 	/** The prefix of the json file. */
@@ -51,12 +72,6 @@ public class PullJsonFromApi {
 	/** The suffix of the json file. */
 	private static final String JSON_SUFFIX = "]}";
 	
-	/** The name of the response field in the json. Used to tell if the 
-	 * request was successful. */
-	private static final String RESPONSE_TEXT = "response";
-	
-	/** The response value from the API upon a successful request. */
-	private static final String HERO_SUCCESS = "success";
 	
 	
 	public static void main(String[] args) {
@@ -76,6 +91,12 @@ public class PullJsonFromApi {
 		// True until the first hero is processed. Used to separate heroes by comma
 		boolean firstHero = true;
 		
+		// A set of the bad hero id's. 
+		HashSet<Integer> badIDs = new HashSet<>();
+		for (int id : BAD_IDS) {
+			badIDs.add(id);
+		}
+		
 		
 		try {
 			// Attempt to create a new file, or not if it already exists. 
@@ -90,18 +111,28 @@ public class PullJsonFromApi {
 			
 			ObjectMapper om = new ObjectMapper();
 			
-			int idCounter = 1;
+			int currentId = STARTING_ID;
 			
 			// While we have not encountered an invalid id, keep requesting heros
 			// and saving them. Or until we encounter an exception. 
 			while (true) {
+				// If the current ID is a bad id, skip it. 
+				if (badIDs.contains(currentId)) {
+					currentId++;
+					continue;
+				}
 				// Get the raw json string, and convert it to a map to read the values
-				jsonString = getHeroJSON(idCounter++);
+				jsonString = getHeroJSON(currentId++);
 				jsonMap = om.readValue(jsonString, HashMap.class);
 				
 				// If the response isn't a successful one, we're likely done. 
 				if (!jsonMap.get(RESPONSE_TEXT).equals(HERO_SUCCESS)) {
 					System.out.println("Response: " + jsonMap.get(RESPONSE_TEXT));
+					break;
+				}
+				// If any input is detected on the console, stops requesting. 
+				if (System.in.available() > 0) {
+					System.out.println("Detected Input. Breaking...");
 					break;
 				}
 				
@@ -115,6 +146,10 @@ public class PullJsonFromApi {
 				// Attempt to write the JSON to the file. 
 				writer.write(jsonString);
 				
+				// Perform a wait based on the maximum number of requests per 
+				// minute. This is only approximate as it doesn't take into 
+				// account the time the request took. 
+				try {Thread.sleep(60000/MAX_REQUESTS_PER_MIN);} catch(InterruptedException ie) {}
 			}
 		
 		} catch(FileNotFoundException e) {
