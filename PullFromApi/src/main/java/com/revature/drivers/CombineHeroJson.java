@@ -3,8 +3,9 @@ package com.revature.drivers;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 
+/** This program is designed to take multiple json hero files, and compile 
+ * them into one large heroes json file.  */
 public class CombineHeroJson {
 	
 	
