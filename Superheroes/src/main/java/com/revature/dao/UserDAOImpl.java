@@ -66,7 +66,7 @@ public class UserDAOImpl implements UserDAO{
 	@Override
 	public List<MyUser> getUserByUsername(String username) {
 		Session s = HibernateUtil.getSession();
-		Query q = s.createSQLQuery("SELECT * FROM USER WHERE USER_NAME = ?").addEntity(MyUser.class);
+		Query q = s.createSQLQuery("SELECT * FROM MYUSER WHERE USER_NAME = ?").addEntity(MyUser.class);
 		q.setString(0, username);
 		List<MyUser> users = q.list();
 		s.close();
