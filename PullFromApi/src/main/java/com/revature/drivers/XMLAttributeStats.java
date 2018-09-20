@@ -19,7 +19,7 @@ import com.revatre.xml.XMLParser;
 public class XMLAttributeStats {
 	
 	private static final String FILE_LOCATION = 
-			"C:\\Users\\David\\Desktop\\Dev Environments\\gitStuff\\Revature\\project2\\heroes.xml";
+			"heroes.xml";
 	
 	
 	public static void main(String[] args) {
@@ -27,6 +27,9 @@ public class XMLAttributeStats {
 		
 //		final String target = FileLoc.TARGET_MOVIE;
 		final String baseTag = "element";
+		
+		ClassLoader classLoader = .getClass().getClassLoader();
+//		File file = new File(classLoader.getResource("file/test.xml").getFile());
 		
 		System.out.print("Parsing Input Files"); 
 		try {
