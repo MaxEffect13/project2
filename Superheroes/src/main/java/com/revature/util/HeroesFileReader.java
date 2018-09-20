@@ -2,8 +2,12 @@ package com.revature.util;
 
 public class HeroesFileReader {
 	
-	
-	public static String getHeroJson() {
+	/** 
+	 * Re
+	 * @return
+	 */
+	public static String getHeroJson(int heroId) {
+		
 		return null;
 	}
 	
