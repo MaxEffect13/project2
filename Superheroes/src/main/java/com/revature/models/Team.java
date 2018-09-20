@@ -32,25 +32,21 @@ public class Team {
 	private int combat;
 	@ManyToOne
 	@JoinColumn(name= "USER_ID")
+	
+	@ManyToMany(fetch=FetchType.EAGER, cascade=CascadeType.ALL)
+	@JoinTable(
+			name="TEAM_HERO",
+			joinColumns = {@JoinColumn(name="TEAM_ID")},
+			inverseJoinColumns = {@JoinColumn(name="HERO_ID")})
+	private List<Hero> heroes = new ArrayList<>();
+	
 	private MyUser user;
-	/**
-	 * 
-	 */
+	
 	public Team() {
 		super();
-		// TODO Auto-generated constructor stub
+		
 	}
-	/**
-	 * @param id
-	 * @param name
-	 * @param intelligence
-	 * @param strength
-	 * @param speed
-	 * @param durability
-	 * @param power
-	 * @param combat
-	 * @param user
-	 */
+	
 	public Team(int id, String name, int intelligence, int strength, int speed, int durability, int power, int combat,
 			MyUser user) {
 		super();
