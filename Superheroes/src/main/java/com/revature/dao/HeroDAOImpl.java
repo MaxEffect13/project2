@@ -20,15 +20,6 @@ public class HeroDAOImpl implements HeroDAO{
 	}
 
 	@Override
-	public Team getTeamById(int id) {
-		Session s = HibernateUtil.getSession();
-
-		Team t = (Team) s.get(Team.class, id);
-		s.close();
-		return t;
-	}
-
-	@Override
 	public int createHero(Hero h) {
 		Session s = HibernateUtil.getSession();
 		Transaction tx = s.beginTransaction();
