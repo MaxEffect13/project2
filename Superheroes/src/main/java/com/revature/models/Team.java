@@ -32,6 +32,7 @@ public class Team {
 	private int combat;
 	@ManyToOne
 	@JoinColumn(name= "USER_ID")
+	private MyUser user;
 	
 	@ManyToMany(fetch=FetchType.EAGER, cascade=CascadeType.ALL)
 	@JoinTable(
@@ -39,8 +40,6 @@ public class Team {
 			joinColumns = {@JoinColumn(name="TEAM_ID")},
 			inverseJoinColumns = {@JoinColumn(name="HERO_ID")})
 	private List<Hero> heroes = new ArrayList<>();
-	
-	private MyUser user;
 	
 	public Team() {
 		super();
