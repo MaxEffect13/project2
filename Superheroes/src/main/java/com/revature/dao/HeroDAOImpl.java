@@ -29,11 +29,7 @@ public class HeroDAOImpl implements HeroDAO{
 		return hPK;
 	}
 
-	@Override
-	public void updateHero(Hero h) {
-		// TODO Auto-generated method stub
-		
-	}
+	
 	@Override
 	public void deleteHero(int id) {
 		Session s = HibernateUtil.getSession();
@@ -45,5 +41,6 @@ public class HeroDAOImpl implements HeroDAO{
 		tx.commit();
 		s.close();
 	}
+
 
 }

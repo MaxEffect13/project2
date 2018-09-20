@@ -26,20 +26,12 @@ public class MyUser {
 	private String email;
 	@Column(name = "USER_ROLE")
 	private String role;
-	/**
-	 * 
-	 */
+	
 	public MyUser() {
 		super();
-		// TODO Auto-generated constructor stub
+		
 	}
-	/**
-	 * @param id
-	 * @param username
-	 * @param password
-	 * @param email
-	 * @param role
-	 */
+	
 	public MyUser(int id, String username, String password, String email, String role) {
 		super();
 		this.id = id;

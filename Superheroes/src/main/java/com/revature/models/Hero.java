@@ -34,38 +34,18 @@ public class Hero implements Serializable{
 	@Column
 	private int combat;
 	
-	@Id
-	@ManyToMany(fetch=FetchType.EAGER, cascade=CascadeType.ALL)
-	@JoinTable(
-			name="TEAM_HERO",
-			joinColumns = {@JoinColumn(name="TEAM_ID")},
-			inverseJoinColumns = {@JoinColumn(name="HERO_ID")})
-	private List<Hero> heroes = new ArrayList<>();
-	
 	@Column(name = "HERO_NAME")
 	private String name;
 
-	/**
-	 * 
-	 */
+	
 	public Hero() {
 		super();
-		// TODO Auto-generated constructor stub
+		
 	}
 
-	/**
-	 * @param heroId
-	 * @param intelligence
-	 * @param strength
-	 * @param speed
-	 * @param durability
-	 * @param power
-	 * @param combat
-	 * @param heroes
-	 * @param name
-	 */
+	
 	public Hero(int heroId, int intelligence, int strength, int speed, int durability, int power, int combat,
-			List<Hero> heroes, String name) {
+			String name) {
 		super();
 		this.heroId = heroId;
 		this.intelligence = intelligence;
@@ -74,7 +54,6 @@ public class Hero implements Serializable{
 		this.durability = durability;
 		this.power = power;
 		this.combat = combat;
-		this.heroes = heroes;
 		this.name = name;
 	}
 
@@ -134,14 +113,6 @@ public class Hero implements Serializable{
 		this.combat = combat;
 	}
 
-	public List<Hero> getHeroes() {
-		return heroes;
-	}
-
-	public void setHeroes(List<Hero> heroes) {
-		this.heroes = heroes;
-	}
-
 	public String getName() {
 		return name;
 	}
@@ -157,7 +128,6 @@ public class Hero implements Serializable{
 		result = prime * result + combat;
 		result = prime * result + durability;
 		result = prime * result + heroId;
-		result = prime * result + ((heroes == null) ? 0 : heroes.hashCode());
 		result = prime * result + intelligence;
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
 		result = prime * result + power;
@@ -181,11 +151,6 @@ public class Hero implements Serializable{
 			return false;
 		if (heroId != other.heroId)
 			return false;
-		if (heroes == null) {
-			if (other.heroes != null)
-				return false;
-		} else if (!heroes.equals(other.heroes))
-			return false;
 		if (intelligence != other.intelligence)
 			return false;
 		if (name == null) {
@@ -205,9 +170,10 @@ public class Hero implements Serializable{
 	@Override
 	public String toString() {
 		return "Hero [heroId=" + heroId + ", intelligence=" + intelligence + ", strength=" + strength + ", speed="
-				+ speed + ", durability=" + durability + ", power=" + power + ", combat=" + combat + ", heroes="
-				+ heroes + ", name=" + name + "]";
+				+ speed + ", durability=" + durability + ", power=" + power + ", combat=" + combat + ", name=" + name
+				+ "]";
 	}
+
 	
 	
 }
