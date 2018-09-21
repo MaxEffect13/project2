@@ -1,0 +1,15 @@
+package com.revature.services;
+
+import java.util.List;
+
+import com.revature.models.MyUser;
+
+public interface UserDAO {
+	
+	public List<MyUser> findAllUsers();
+	public MyUser findUserById(Long id);
+	public MyUser addUser(MyUser newUser);
+	public MyUser updateUser(MyUser user);
+	public MyUser deleteUser(MyUser user);
+	public MyUser findUserByUsername(String username);
+}
