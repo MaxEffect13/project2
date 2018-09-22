@@ -28,7 +28,7 @@ public class XMLAttributeStats {
 //		final String target = FileLoc.TARGET_MOVIE;
 		final String baseTag = "element";
 		
-		ClassLoader classLoader = .getClass().getClassLoader();
+//		ClassLoader classLoader = .getClass().getClassLoader();
 //		File file = new File(classLoader.getResource("file/test.xml").getFile());
 		
 		System.out.print("Parsing Input Files"); 
