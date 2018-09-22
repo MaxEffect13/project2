@@ -60,6 +60,7 @@ public class UserController {
 			try {
 				response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			} catch(IOException ex2) {}
+			ex.printStackTrace();
 		}
 	} // end of createUser
 	
