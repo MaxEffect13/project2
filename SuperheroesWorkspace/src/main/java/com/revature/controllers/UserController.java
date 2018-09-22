@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.revature.models.User;
+import com.revature.models.MyUser;
 import com.revature.util.StringHasher;
 
 @RestController
@@ -22,7 +22,7 @@ public class UserController {
 		//TODO: Query the DAO to see if the username exists. 
 		
 		// If the username isn't taken, add a new user. 
-		User user = new User();
+		MyUser user = new MyUser();
 		user.setUsername(username);
 		user.setEmail(email);
 		user.setPassword(StringHasher.sha256Hash(password));

@@ -1,7 +1,6 @@
 package com.revature.controllers;
 
 import java.io.IOException;
-import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -11,10 +10,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.revature.dao.UserDAO;
-import com.revature.dao.UserDAOImpl;
 import com.revature.models.MyUser;
-import com.revature.models.User;
+import com.revature.services.UserDAO;
+import com.revature.services.UserDAOImpl;
 import com.revature.util.StringHasher;
 
 @Controller
@@ -53,18 +51,19 @@ public class LoginController {
 			// Query the database for the user's password. 
 			UserDAO userDao = new UserDAOImpl();
 			
-			// Get a list of one or zero matching users. 
-			List<MyUser> users = userDao.getUserByUsername(username);
+			// Get a user by it's id or null?
+			MyUser user = userDao.findUserByUsername(username);
 			
-			// If there are zero users, send a 401 code signifying bad user/pass
-			if (users.size() == 0) {
-				response.sendError(401);
+			// If there are no users by that username, send a 401 code 
+			// signifying bad user/pass
+			if (user == null) {
+				response.sendError(405);
 				return;
 			}
 			
 			// If the password hash doesn't match, send 401 code signifying bad 
 			// username / password
-			if (!users.get(0).getPassword().equals(StringHasher.sha256Hash(password))) {
+			if (!user.getPassword().equals(StringHasher.sha256Hash(password))) {
 				response.sendError(401);
 				return;
 			}
@@ -72,7 +71,7 @@ public class LoginController {
 			// Otherwise, the login was a success. So create a session with the 
 			// username. 
 			HttpSession session = request.getSession();
-			session.setAttribute(USER_SESSION_ATTR, users.get(0).getUsername());
+			session.setAttribute(USER_SESSION_ATTR, user.getUsername());
 			
 			// Status code 200 is sent implicitly by returning naturally.
 		} catch (IOException ex) {
