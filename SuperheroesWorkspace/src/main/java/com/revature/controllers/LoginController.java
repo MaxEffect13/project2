@@ -1,6 +1,7 @@
 package com.revature.controllers;
 
 import java.io.IOException;
+import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -51,15 +52,18 @@ public class LoginController {
 			// Query the database for the user's password. 
 			UserDAO userDao = new UserDAOImpl();
 			
+			System.out.println("Username: " + username);
 			// Get a user by it's id or null?
 			MyUser user = userDao.findUserByUsername(username);
+			
 			
 			// If there are no users by that username, send a 401 code 
 			// signifying bad user/pass
 			if (user == null) {
-				response.sendError(405);
+				response.sendError(401);
 				return;
 			}
+			
 			
 			// If the password hash doesn't match, send 401 code signifying bad 
 			// username / password

@@ -15,7 +15,7 @@ public class Team {
 	
 	@Column(name = "TEAM_ID")
 	
-	private int id;
+	private Long id;
 	@Column(name = "TEAM_NAME", unique = true)
 	private String name;
 	@Column
@@ -45,7 +45,7 @@ public class Team {
 		
 	}
 	
-	public Team(int id, String name, int intelligence, int strength, int speed, int durability, int power, int combat,
+	public Team(Long id, String name, int intelligence, int strength, int speed, int durability, int power, int combat,
 			MyUser user) {
 		super();
 		this.id = id;
@@ -58,10 +58,10 @@ public class Team {
 		this.combat = combat;
 		this.user = user;
 	}
-	public int getId() {
+	public Long getId() {
 		return id;
 	}
-	public void setId(int id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 	public String getName() {
@@ -118,7 +118,7 @@ public class Team {
 		int result = 1;
 		result = prime * result + combat;
 		result = prime * result + durability;
-		result = prime * result + id;
+		result = prime * result + (int)(long)id;
 		result = prime * result + intelligence;
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
 		result = prime * result + power;

@@ -42,6 +42,9 @@ public class UserDAOImpl implements UserDAO{
 
 	@Override
 	public MyUser findUserByUsername(String username) {
+		if (userRepo == null) {
+			System.out.println("It's Not initializing correctly.");
+		}
 		return userRepo.findUserByUsername(username);
 			}
 

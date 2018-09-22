@@ -16,7 +16,7 @@ public class MyUser {
 	
 	@Column(name = "USER_ID")
 	
-	private int id;
+	private Long id;
 	
 	@Column(name = "USER_NAME", unique = true)
 	private String username;
@@ -32,7 +32,7 @@ public class MyUser {
 		
 	}
 	
-	public MyUser(int id, String username, String password, String email, String role) {
+	public MyUser(Long id, String username, String password, String email, String role) {
 		super();
 		this.id = id;
 		this.username = username;
@@ -40,10 +40,10 @@ public class MyUser {
 		this.email = email;
 		this.role = role;
 	}
-	public int getId() {
+	public Long getId() {
 		return id;
 	}
-	public void setId(int id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 	public String getUsername() {
@@ -75,7 +75,7 @@ public class MyUser {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((email == null) ? 0 : email.hashCode());
-		result = prime * result + id;
+		result = prime * result + (int)(long)id;
 		result = prime * result + ((password == null) ? 0 : password.hashCode());
 		result = prime * result + ((role == null) ? 0 : role.hashCode());
 		result = prime * result + ((username == null) ? 0 : username.hashCode());

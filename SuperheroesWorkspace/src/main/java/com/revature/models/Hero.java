@@ -20,7 +20,7 @@ public class Hero implements Serializable{
 
 	@Id
 	@Column(name="HERO_ID", unique = true)
-	private int heroId;
+	private Long heroId;
 	@Column
 	private int intelligence;
 	@Column
@@ -44,7 +44,7 @@ public class Hero implements Serializable{
 	}
 
 	
-	public Hero(int heroId, int intelligence, int strength, int speed, int durability, int power, int combat,
+	public Hero(Long heroId, int intelligence, int strength, int speed, int durability, int power, int combat,
 			String name) {
 		super();
 		this.heroId = heroId;
@@ -57,11 +57,11 @@ public class Hero implements Serializable{
 		this.name = name;
 	}
 
-	public int getHeroId() {
+	public Long getHeroId() {
 		return heroId;
 	}
 
-	public void setHeroId(int heroId) {
+	public void setHeroId(Long heroId) {
 		this.heroId = heroId;
 	}
 
@@ -127,7 +127,7 @@ public class Hero implements Serializable{
 		int result = 1;
 		result = prime * result + combat;
 		result = prime * result + durability;
-		result = prime * result + heroId;
+		result = prime * result + (int)(long)heroId;
 		result = prime * result + intelligence;
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
 		result = prime * result + power;

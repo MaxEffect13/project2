@@ -2,8 +2,11 @@ package com.revature.services;
 
 import java.util.List;
 
+import org.springframework.stereotype.Service;
+
 import com.revature.models.MyUser;
 
+@Service
 public interface UserDAO {
 	
 	public List<MyUser> findAllUsers();

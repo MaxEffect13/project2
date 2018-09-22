@@ -2,8 +2,11 @@ package com.revature.services;
 
 import java.util.List;
 
+import org.springframework.stereotype.Service;
+
 import com.revature.models.Team;
 
+@Service
 public interface TeamDAO {
 	public List<Team> findAllTeams();
 	public Team findTeamById(Long id);
