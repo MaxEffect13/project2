@@ -54,6 +54,8 @@ public class Team {
 			inverseJoinColumns = {@JoinColumn(name="HERO_ID")})
 	private List<Hero> heroes = new ArrayList<>();
 	
+	
+
 	public Team() {
 		super();
 		
@@ -125,6 +127,9 @@ public class Team {
 	}
 	public void setUser(MyUser user) {
 		this.user = user;
+	}
+	public List<Hero> getHeroes() {
+		return heroes;
 	}
 	
 	@Override

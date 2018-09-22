@@ -1,8 +1,12 @@
 package com.revature.controllers;
 
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -52,19 +56,30 @@ public class HeroController {
 	 * @param low - The lower end of the heroes to get (inclusive)
 	 * @param high - The higher end of the heroes to get (inclusive)
 	 * @return A list of heroes in the specified range. 
+	 * @throws IOException 
 	 */
 	@GetMapping(value="/rangeheroes", produces=MediaType.APPLICATION_JSON_VALUE)
 	public List<Hero> getHeroesInRange(@RequestParam("low") long low, 
-										@RequestParam("high") long high) 
+										@RequestParam("high") long high,
+										HttpServletResponse response) throws IOException 
 	{
 		// TODO: Currently need a dao method to search for a range of heroes. 
 		// TODO: in the meantime, this will have to do. 
 		// Create a list large enough to hold all the results
 		List<Hero> heroes = new ArrayList<>((int)(high-low+1));
 		
+		int returnStatus = 200;
+		
 		// TODO: This is the temporary way of populating the list until a 
 		// TODO: Better DAO method for this is available. 
 		for (long i=low; i<=high; i++) {
+			Hero hero = heroDao.findHeroById(i);
+			// If this hero wasn't in the database, return a 410 status code. 
+			if (hero == null) {
+				response.sendError(410);
+				return new LinkedList<>();
+			}
+			
 			heroes.add(heroDao.findHeroById(i));
 		}
 		

@@ -1,6 +1,8 @@
 package com.revature.controllers;
 
 import java.io.IOException;
+import java.sql.SQLException;
+import java.sql.SQLIntegrityConstraintViolationException;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -52,6 +54,7 @@ public class UserController {
 			user.setUsername(username);
 			user.setEmail(email);
 			user.setPassword(StringHasher.sha256Hash(password));
+			user.setRole("No");
 			//TODO: Figure out the default role for a user. 
 			
 			userDao.addUser(user);
