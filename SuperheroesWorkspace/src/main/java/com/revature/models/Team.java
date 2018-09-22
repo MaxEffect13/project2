@@ -1,21 +1,34 @@
 package com.revature.models;
 
-import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
 
+import org.springframework.stereotype.Component;
+
+@Component
 @Entity
 @Table
 public class Team {
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "TeamSequence")
-	@SequenceGenerator(name = "TeamSequence", allocationSize = 1, sequenceName = "SQ_Team_PK")
-	
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "teamSequence")
+	@SequenceGenerator(name = "teamSequence", allocationSize = 1, sequenceName = "SQ_Team_PK")
 	@Column(name = "TEAM_ID")
+	private Long id;
 	
-	private int id;
 	@Column(name = "TEAM_NAME", unique = true)
 	private String name;
 	@Column
@@ -33,6 +46,7 @@ public class Team {
 	@ManyToOne
 	@JoinColumn(name= "USER_ID")
 	private MyUser user;
+	
 	@ManyToMany(fetch=FetchType.EAGER, cascade=CascadeType.ALL)
 	@JoinTable(
 			name="TEAM_HERO",
@@ -45,7 +59,7 @@ public class Team {
 		
 	}
 	
-	public Team(int id, String name, int intelligence, int strength, int speed, int durability, int power, int combat,
+	public Team(Long id, String name, int intelligence, int strength, int speed, int durability, int power, int combat,
 			MyUser user) {
 		super();
 		this.id = id;
@@ -58,10 +72,10 @@ public class Team {
 		this.combat = combat;
 		this.user = user;
 	}
-	public int getId() {
+	public Long getId() {
 		return id;
 	}
-	public void setId(int id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 	public String getName() {
@@ -112,13 +126,15 @@ public class Team {
 	public void setUser(MyUser user) {
 		this.user = user;
 	}
+	
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + combat;
 		result = prime * result + durability;
-		result = prime * result + id;
+		result = prime * result + ((heroes == null) ? 0 : heroes.hashCode());
+		result = prime * result + ((id == null) ? 0 : id.hashCode());
 		result = prime * result + intelligence;
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
 		result = prime * result + power;
@@ -140,7 +156,15 @@ public class Team {
 			return false;
 		if (durability != other.durability)
 			return false;
-		if (id != other.id)
+		if (heroes == null) {
+			if (other.heroes != null)
+				return false;
+		} else if (!heroes.equals(other.heroes))
+			return false;
+		if (id == null) {
+			if (other.id != null)
+				return false;
+		} else if (!id.equals(other.id))
 			return false;
 		if (intelligence != other.intelligence)
 			return false;
