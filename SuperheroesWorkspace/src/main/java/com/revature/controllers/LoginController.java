@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -23,6 +24,10 @@ public class LoginController {
 	 * corresponds to a user's username. */
 	public static final String USER_SESSION_ATTR = "username";
 	
+	/** The interface used to interact with the users repository. This is 
+	 * automatically instantiated. */
+	@Autowired
+	private UserDAO userDao;
 	
 	/** 
 	 * Handles the login request. Expects two parameters to be passed: 
@@ -50,7 +55,7 @@ public class LoginController {
 			}
 			
 			// Query the database for the user's password. 
-			UserDAO userDao = new UserDAOImpl();
+//			UserDAO userDao = new UserDAOImpl();
 			
 			System.out.println("Username: " + username);
 			// Get a user by it's id or null?
