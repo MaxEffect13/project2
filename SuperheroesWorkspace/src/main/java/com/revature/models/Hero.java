@@ -1,26 +1,28 @@
 package com.revature.models;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
+import org.springframework.stereotype.Component;
+
+@Component
 @Entity
 @Table	
-public class Hero implements Serializable{
+public class Hero /*implements Serializable*/{
 
 	@Id
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "heroSequence")
+	@SequenceGenerator(name = "heroSequence", allocationSize = 1, sequenceName = "SQ_HERO_PK")
 	@Column(name="HERO_ID", unique = true)
 	private Long heroId;
+	
 	@Column
 	private int intelligence;
 	@Column
@@ -127,7 +129,7 @@ public class Hero implements Serializable{
 		int result = 1;
 		result = prime * result + combat;
 		result = prime * result + durability;
-		result = prime * result + (int)(long)heroId;
+		result = prime * result + ((heroId == null) ? 0 : heroId.hashCode());
 		result = prime * result + intelligence;
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
 		result = prime * result + power;
@@ -149,7 +151,10 @@ public class Hero implements Serializable{
 			return false;
 		if (durability != other.durability)
 			return false;
-		if (heroId != other.heroId)
+		if (heroId == null) {
+			if (other.heroId != null)
+				return false;
+		} else if (!heroId.equals(other.heroId))
 			return false;
 		if (intelligence != other.intelligence)
 			return false;

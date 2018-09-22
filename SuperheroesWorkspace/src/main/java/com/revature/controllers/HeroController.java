@@ -13,9 +13,18 @@ import com.revature.services.HeroDAOImpl;
 @Controller
 public class HeroController {
 	
+	@RequestMapping(value="/allheroes", method=RequestMethod.GET)
+	@ResponseBody
+	public String getHeroes() {
+		HeroDAO heroDao = new HeroDAOImpl();
+		
+		heroDao.findAllHeroes();
+		return null;
+	}
+	
 	@RequestMapping(value="/hero", method=RequestMethod.GET)
 	@ResponseBody
-	public String getHero(@RequestParam("id") int heroId) {
+	public String getHeroById(@RequestParam("id") int heroId) {
 //		HeroDAO heroDao = new HeroDAOImpl();
 		
 //		Hero hero = heroDao.

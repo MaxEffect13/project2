@@ -16,6 +16,7 @@ public class HeroDAOImpl implements HeroDAO{
 	
 	@Override
 	public List<Hero> findAllHeroes() {
+		System.out.println("Hero Repo Initialized?: " + (heroRepo != null));
 		return heroRepo.findAll();
 	}
 
