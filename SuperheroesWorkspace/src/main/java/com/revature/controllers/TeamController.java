@@ -6,27 +6,31 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.revature.models.Team;
+import com.revature.services.TeamDAO;
 
 @RestController
 public class TeamController {
 	
+	/** The interface used to interact with the teams repository. This is 
+	 * automatically instantiated. */
+	@Autowired
+	private TeamDAO teamDao;
+	
 	@GetMapping("/team")
-	public Team getTeamById(@RequestParam("teamId") String teamId,
+	public Team getTeamById(@RequestParam("teamId") Long teamId,
 							HttpServletResponse response)
 	{
 		try {
 			// Attempt to get the team
-			//TODO: Get the team using the DAO. 
-			Team team = null;
-			
+			Team team = teamDao.findTeamById(teamId);
 			
 			// If the team doesn't exist, send status code 400. 
-			//TODO: Confirm that this is correct condition when new DAO is implemented
 			if (team == null) {
 				response.sendError(400);
 				return null;
@@ -34,6 +38,7 @@ public class TeamController {
 			
 			return team;
 		} catch(IOException ex) {
+			// If an error occurs, attempt to send code 500. 
 			try {response.sendError(500);} catch (IOException e) {}
 			ex.printStackTrace();
 			return null;
@@ -55,7 +60,7 @@ public class TeamController {
 			}
 			
 			// Get the user Id associated with the user. 
-			//TODO: get the user by username. 
+//			session.getAttribute(name)
 			
 			// Create a new team, using the user id. 
 			// TODO: Create a new team using the New DAO

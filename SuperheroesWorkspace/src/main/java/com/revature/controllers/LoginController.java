@@ -22,6 +22,10 @@ public class LoginController {
 	 * corresponds to a user's username. */
 	public static final String USER_SESSION_ATTR = "username";
 	
+	/** The time in seconds between client requests before a session is 
+	 * invalidated. */
+	private static final int SESSION_TIMEOUT = 7200;
+	
 	/** The interface used to interact with the users repository. This is 
 	 * automatically instantiated. */
 	@Autowired
@@ -76,7 +80,7 @@ public class LoginController {
 			// username. 
 			HttpSession session = request.getSession();
 			session.setAttribute(USER_SESSION_ATTR, user.getUsername());
-			
+			session.setMaxInactiveInterval(SESSION_TIMEOUT);
 			// Status code 200 is sent implicitly by returning naturally.
 		} catch (IOException ex) {
 			// If there was a problem, send a 500 code. 
