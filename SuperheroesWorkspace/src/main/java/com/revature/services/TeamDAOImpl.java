@@ -26,12 +26,12 @@ public class TeamDAOImpl implements TeamDAO{
 
 	@Override
 	public Team findTeamByName(String name) {
-		return findTeamByName(name);
+		return teamRepo.findTeamByName(name);
 	}
-//This I'm unsure about
+	
 	@Override
-	public Team findTeamByUserId(Long userid) {
-		return teamRepo.getOne(userid);
+	public List<Team> findTeamByUserId(Long userid) {
+		return teamRepo.findTeamsByUserId(userid);
 	}
 
 	@Override
