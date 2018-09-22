@@ -1,7 +1,6 @@
 package com.revature.controllers;
 
 import java.io.IOException;
-import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -14,7 +13,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.revature.models.MyUser;
 import com.revature.services.UserDAO;
-import com.revature.services.UserDAOImpl;
 import com.revature.util.StringHasher;
 
 @Controller
@@ -54,10 +52,7 @@ public class LoginController {
 				return;
 			}
 			
-			// Query the database for the user's password. 
-//			UserDAO userDao = new UserDAOImpl();
-			
-			System.out.println("Username: " + username);
+			// Query the database for the user and user's password. 
 			// Get a user by it's id or null?
 			MyUser user = userDao.findUserByUsername(username);
 			
