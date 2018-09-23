@@ -1,7 +1,6 @@
 package com.revature.controllers;
 
 import java.io.IOException;
-import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -203,7 +202,7 @@ public class TeamController {
 	
 	
 	
-	@GetMapping("/team/addhero")
+	@GetMapping("/team/removehero")
 	public void removeHeroFromTeam(@RequestParam("teamId") Long teamId, 
 							@RequestParam("heroId") Long heroId, 
 							HttpServletRequest request, 

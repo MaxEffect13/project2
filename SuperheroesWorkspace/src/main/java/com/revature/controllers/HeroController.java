@@ -45,8 +45,15 @@ public class HeroController {
 	 */
 	@RequestMapping(value="/hero", method=RequestMethod.GET, produces=MediaType.APPLICATION_JSON_VALUE)
 	public Hero getHeroById(@RequestParam("id") long id) {
-		// Return the hero corresponding to the provided id.
-		return heroDao.findHeroById(id);
+		try {
+			// Return the hero corresponding to the provided id.
+			return heroDao.findHeroById(id); 
+		} catch (javax.persistence.EntityNotFoundException ex) {
+			// If there wasn't an entity return null.
+			//TODO: This is temporary until the documentation and DAO can be 
+			// updated. 
+			return null;
+		}
 	} // end of getHeroById
 	
 	/**
