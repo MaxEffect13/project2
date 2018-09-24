@@ -1,12 +1,14 @@
 package com.revature.controllers;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.revature.models.MyUser;
@@ -14,7 +16,6 @@ import com.revature.models.loginUsr;
 import com.revature.services.UserDAO;
 
 @Controller
-@RequestMapping("/login")
 public class LoginController {
 	
 	/** A string representing the name of the attribute in a session that 
@@ -42,8 +43,7 @@ public class LoginController {
 	
 	@ResponseBody
 	@CrossOrigin
-	@PostMapping(consumes=MediaType.APPLICATION_JSON_VALUE, produces=MediaType.APPLICATION_JSON_VALUE)
-
+	@PostMapping(value="/login", consumes=MediaType.APPLICATION_JSON_VALUE, produces=MediaType.APPLICATION_JSON_VALUE)
 	public void postLogin(@RequestBody loginUsr usr ) {
 		
 		// Get the username and password parameters
@@ -96,6 +96,21 @@ public class LoginController {
 //			//TODO: Add Logging module. 
 //			ex.printStackTrace();
 //		}
-		}
+	} // end of postLogin
 	
-}
+	
+	@ResponseBody
+	@CrossOrigin
+	@PostMapping("/logout")
+	public void postLogout(HttpServletRequest request) {
+		// If the http request has a session, invalidate it. 
+		HttpSession session = request.getSession(false);
+		if (session != null) {
+			session.invalidate();
+		}
+	} // end of postLogout
+	
+	
+} // end of class LoginController
+
+
