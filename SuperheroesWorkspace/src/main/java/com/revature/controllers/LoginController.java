@@ -1,6 +1,9 @@
 package com.revature.controllers;
 
+import java.io.IOException;
+
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +17,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.revature.models.MyUser;
 import com.revature.models.loginUsr;
 import com.revature.services.UserDAO;
+import com.revature.util.StringHasher;
 
 @Controller
 public class LoginController {
@@ -44,25 +48,24 @@ public class LoginController {
 	@ResponseBody
 	@CrossOrigin
 	@PostMapping(value="/login", consumes=MediaType.APPLICATION_JSON_VALUE, produces=MediaType.APPLICATION_JSON_VALUE)
-	public void postLogin(@RequestBody loginUsr usr ) {
+	public void postLogin(@RequestBody loginUsr usr, 
+				HttpServletRequest request, HttpServletResponse response) {
 		
-		// Get the username and password parameters
-		//String username = request.getParameter("user");
-		//String password = request.getParameter("pass");
-		
+		// Get the username and password parameters from the input json file
 		String username = usr.user;
 		String password = usr.pass;
-		System.out.println(usr.user + usr.pass);
-				
+		System.out.println("User:" + usr.user + "  Pass:" + usr.pass);
 		
+		// Hash the password for comparison. 
+		password = StringHasher.sha256Hash(password);
 		
 		// Wrap in a try catch block just in case there is an error. 
-//		try {
-//			// If either field is null, send 400 status for a bad request. 
-//			if (username == null || password == null) {
-//				response.sendError(400);
-//				return;
-//			}
+		try {
+			// If either field is null, send 400 status for a bad request. 
+			if (username == null || password == null) {
+				response.sendError(400);
+				return;
+			}
 			
 			// Query the database for the user and user's password. 
 			// Get a user by it's id or null?
@@ -71,31 +74,31 @@ public class LoginController {
 			
 			// If there are no users by that username, send a 401 code 
 			// signifying bad user/pass
-//			if (user == null) {
-//				response.sendError(401);
-//				return;
-//			}
-//			
-//			
-//			// If the password hash doesn't match, send 401 code signifying bad 
-//			// username / password
-//			if (!user.getPassword().equals(StringHasher.sha256Hash(password))) {
-//				response.sendError(401);
-//				return;
-//			}
-//			
-//			// Otherwise, the login was a success. So create a session with the 
-//			// username. 
-//			HttpSession session = request.getSession();
-//			session.setAttribute(USER_SESSION_ATTR, user.getUsername());
-//			session.setMaxInactiveInterval(SESSION_TIMEOUT);
-//			// Status code 200 is sent implicitly by returning naturally.
-//		} catch (IOException ex) {
-//			// If there was a problem, send a 500 code. 
-//			try {response.sendError(500);} catch (IOException ex2) {}
-//			//TODO: Add Logging module. 
-//			ex.printStackTrace();
-//		}
+			if (user == null) {
+				response.sendError(401);
+				return;
+			}
+			
+			
+			// If the password hash doesn't match, send 401 code signifying bad 
+			// username / password
+			if (!user.getPassword().equals(password)) {
+				response.sendError(401);
+				return;
+			}
+			
+			// Otherwise, the login was a success. So create a session with the 
+			// username. 
+			HttpSession session = request.getSession();
+			session.setAttribute(USER_SESSION_ATTR, user.getUsername());
+			session.setMaxInactiveInterval(SESSION_TIMEOUT);
+			// Status code 200 is sent implicitly by returning naturally.
+		} catch (IOException ex) {
+			// If there was a problem, send a 500 code. 
+			try {response.sendError(500);} catch (IOException ex2) {}
+			//TODO: Add Logging module. 
+			ex.printStackTrace();
+		}
 	} // end of postLogin
 	
 	

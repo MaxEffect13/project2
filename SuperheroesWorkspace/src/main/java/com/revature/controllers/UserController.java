@@ -45,6 +45,8 @@ public class UserController {
 		if (session != null) {
 			myUser = userDao.findUserByUsername(
 					(String) session.getAttribute(LoginController.USER_SESSION_ATTR));
+			// Blank out the password field. No need to send that. 
+			myUser.setPassword("");
 		}
 		// Otherwise, send status 401 to signify that there isn't a session, 
 		else {
