@@ -1,19 +1,21 @@
 package com.revature.controllers;
 
 import java.io.IOException;
-import java.sql.SQLException;
-import java.sql.SQLIntegrityConstraintViolationException;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.revature.models.MyUser;
 import com.revature.services.UserDAO;
-import com.revature.services.UserDAOImpl;
 import com.revature.util.StringHasher;
 
 @RestController
@@ -24,8 +26,35 @@ public class UserController {
 	@Autowired
 	private UserDAO userDao;
 	
-	
+	/** The default premium status symbol. It is 'n' to represent 'no, the user
+	 * isn't premium'.  */
 	public static final String DEFAULT_ROLE = "n";
+	
+	
+	
+	@CrossOrigin
+	@GetMapping(value="/user", produces=MediaType.APPLICATION_JSON_VALUE)
+	public MyUser getUser(HttpServletRequest request, 
+						HttpServletResponse response) throws IOException 
+	{
+		// Attempt to get a session associated with the request, if one exists.
+		HttpSession session = request.getSession(false);
+		MyUser myUser = null;
+		
+		// If the request has a session, get the user associated with it. 
+		if (session != null) {
+			myUser = userDao.findUserByUsername(
+					(String) session.getAttribute(LoginController.USER_SESSION_ATTR));
+		}
+		// Otherwise, send status 401 to signify that there isn't a session, 
+		else {
+			response.sendError(401);
+		}
+		
+		return myUser;
+	} // end of getUser
+	
+	
 	
 	/**
 	 * This method takes parameters, and attempts to create a new user. 
@@ -57,7 +86,7 @@ public class UserController {
 			user.setEmail(email);
 			user.setPassword(StringHasher.sha256Hash(password));
 			user.setRole(DEFAULT_ROLE);
-			//TODO: Figure out the default role for a user. 
+			
 			
 			userDao.addUser(user);
 		} catch (IOException ex) {
