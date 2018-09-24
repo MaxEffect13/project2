@@ -99,14 +99,27 @@ public class LoginController {
 	} // end of postLogin
 	
 	
+	/** 
+	 * Handles a logout request. If there is a session for this request, this 
+	 * function invalidates it. 
+	 */
 	@ResponseBody
 	@CrossOrigin
 	@PostMapping("/logout")
 	public void postLogout(HttpServletRequest request) {
-		// If the http request has a session, invalidate it. 
+		// Attempt to get any existing session. 
 		HttpSession session = request.getSession(false);
-		if (session != null) {
-			session.invalidate();
+		
+		// Put in try/catch in case the session is already invalid. 
+		try {
+			// If the http request has a session, invalidate it. 
+			if (session != null) {
+				session.invalidate();
+			}
+		} catch(IllegalStateException ex) {
+			System.err.println("Session for '" 
+								+ request.getAttribute(USER_SESSION_ATTR)
+								+ "' is already invalid. ");
 		}
 	} // end of postLogout
 	
