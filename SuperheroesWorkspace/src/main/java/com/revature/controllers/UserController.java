@@ -25,6 +25,8 @@ public class UserController {
 	private UserDAO userDao;
 	
 	
+	public static final String DEFAULT_ROLE = "n";
+	
 	/**
 	 * This method takes parameters, and attempts to create a new user. 
 	 * Fails if the username is already taken (sends code 401), parameters are 
@@ -54,7 +56,7 @@ public class UserController {
 			user.setUsername(username);
 			user.setEmail(email);
 			user.setPassword(StringHasher.sha256Hash(password));
-			user.setRole("No");
+			user.setRole(DEFAULT_ROLE);
 			//TODO: Figure out the default role for a user. 
 			
 			userDao.addUser(user);
