@@ -39,11 +39,18 @@ public class UserDAOImpl implements UserDAO{
 		userRepo.delete(user);
 		return user;
 	}
-
 	@Override
 	public MyUser findUserByUsername(String username) {
 		return userRepo.findUserByUsername(username);
 			}
-
+	@Override
+	public MyUser findUserByUsernameAndPassword(String username, String password) {
+		return userRepo.findUserByUsernameAndPassword(username, password);
+			}
+	
+	@Override
+	public MyUser login(String user, String pass) {
+		return userRepo.findUserByUsernameAndPassword(user, pass);
+	}
 	
 }

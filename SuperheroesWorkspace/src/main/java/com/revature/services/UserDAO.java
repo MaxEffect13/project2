@@ -15,4 +15,6 @@ public interface UserDAO {
 	public MyUser updateUser(MyUser user);
 	public MyUser deleteUser(MyUser user);
 	public MyUser findUserByUsername(String username);
+	public MyUser findUserByUsernameAndPassword(String username, String password);
+	public MyUser login(String user, String pass);
 }
