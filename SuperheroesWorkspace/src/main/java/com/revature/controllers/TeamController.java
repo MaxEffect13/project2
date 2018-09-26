@@ -18,6 +18,7 @@ import com.revature.models.Team;
 import com.revature.services.HeroDAO;
 import com.revature.services.TeamDAO;
 import com.revature.services.UserDAO;
+import com.revature.util.TeamStatsHelper;
 
 @RestController
 public class TeamController {
@@ -190,8 +191,9 @@ public class TeamController {
 			}
 			
 			// If we passed all other checks, add the hero to the team, and
-			// update the database. 
+			// update the database. Also update the stats of the team. 
 			team.getHeroes().add(hero);
+			TeamStatsHelper.updateTeamStats(team);
 			teamDao.updateTeam(team);
 		} catch (IOException ex) {
 			try {response.sendError(500);} catch (IOException e) {}
@@ -244,7 +246,9 @@ public class TeamController {
 			// If we passed all other checks, remove the hero from the team, and
 			// update the database. 
 			if (team.getHeroes().remove(hero)) {
-				// Only update the database if there was a hero removed. 
+				// Only update the team stats and database if there was a 
+				// hero removed. 
+				TeamStatsHelper.updateTeamStats(team);
 				teamDao.updateTeam(team);
 			}
 		} catch (IOException ex) {
