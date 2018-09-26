@@ -133,6 +133,14 @@ public class TestBackEnd {
 						).getResponseCode());
 	}
 	
+	/** Tests that the user information can be retrieved. */
+	@Test
+	public void testUserInfo() throws IOException {
+		login();
+		
+		System.out.println(makeRequest("/user", "GET", "").getContent());
+	} // end of testUserInfo
+	
 	// ========================================================
 	// Helper Functions
 	// ========================================================

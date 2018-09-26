@@ -119,6 +119,9 @@ public class LoginController {
 			if (session != null) {
 				session.invalidate();
 			}
+			else {
+				System.out.println("No Session");
+			}
 		} catch(IllegalStateException ex) {
 			System.err.println("Session for '" 
 								+ request.getAttribute(USER_SESSION_ATTR)
