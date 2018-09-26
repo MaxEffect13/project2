@@ -45,16 +45,11 @@ public class TestBackEnd {
 		// settings to get the JSON.
 		con = (HttpURLConnection) url.openConnection();
 		con.setRequestMethod(method);
-//		con.setRequestProperty("Content-Type", "application/json");
-		
 		
 		// If there is a body, send it to the remote server
 		if (!requestBody.isEmpty()) {
 			con.setDoOutput(true);
-//			con.setDoInput(true);
 			con.setRequestProperty("Content-Type", "application/json");
-//			con.setRequestProperty("Content-Type", "application/json, charset=UTF-8");
-//			con.setRequestProperty("Accept", "application/json");
 			con.setRequestProperty("Content-Length", ""+requestBody.length());
 			try(DataOutputStream writer = new DataOutputStream(con.getOutputStream())) {
 				writer.write(requestBody.getBytes(StandardCharsets.UTF_8));
@@ -89,34 +84,72 @@ public class TestBackEnd {
 	}
 	
 	
-	@Before
-	public void preTestLogin() throws IOException{
+	
+	/** Test that repeated logins and logouts can be made */
+	@Test
+	public void testLoginSuccess() throws IOException {
+		// Test that we can login and logout
+		login();
+		logout();
+		
+		// Test that we can login and logout again
+		login();
+		logout();
+	} // end of testLoginSuccess
+	
+	
+	
+	
+	/** Test that a bad username returns the 401 status code, unauthorized. */
+	@Test
+	public void testLoginBadUsername() throws IOException {
+		assertEquals(401, makeRequest("/login", "POST", 
+						"{\"user\":\"asdfqwerzxcv1234567890\", \"pass\":\"test\"}"
+						).getResponseCode());
+	} // end of testLoginBadUsername
+	
+	/** Test that a bad password returns the 401 status code, unauthorized. */
+	@Test
+	public void testLoginBadPassword() throws IOException {
+		assertEquals(401, makeRequest("/login", "POST", 
+						"{\"user\":\"test\", \"pass\":\"asdfqwerzxcv1234567890\"}"
+						).getResponseCode());
+	} // end of testLoginBadPassword
+	
+	
+	/** Test that a bad username and password returns the 401 status code, unauthorized. */
+	@Test
+	public void testLoginBadUsernamePassword() throws IOException {
+		assertEquals(401, makeRequest("/login", "POST", 
+						"{\"user\":\"asdfqwerzxcv1234567890\", \"pass\":\"asdfqwerzxcv1234567890\"}"
+						).getResponseCode());
+	} // end of testLoginBadUsernamePassword
+	
+	/** Test that missing parameters returns the 400 status code, bad request. */
+	@Test
+	public void testLoginBadParameters() throws IOException {
+		assertEquals(400, makeRequest("/login", "POST", 
+						"{}"
+						).getResponseCode());
+	}
+	
+	// ========================================================
+	// Helper Functions
+	// ========================================================
+	
+	
+	
+	public void login() throws IOException{
 		// Attempt to log in and get a session. 
 		assertEquals(200, makeRequest("/login", "POST", 
 						"{\"user\":\"test\", \"pass\":\"test\"}"
 						).getResponseCode());
 	}
 	
-	@After
-	public void postTestLogout() throws IOException{
+	public void logout() throws IOException{
 		// Make sure we can logout
 		assertEquals(200, makeRequest("/logout", "POST", ""
 						).getResponseCode());
 	}
-	
-	@Test
-	public void testLoginSuccess() throws IOException {
-		// Make sure we can logout again
-		assertEquals(200, makeRequest("/logout", "POST", ""
-						).getResponseCode());
-		
-		// Make sure we can login again
-		assertEquals(200, makeRequest("/login", "POST", 
-						"{\"user\":\"test\", \"pass\":\"test\"}"
-						).getResponseCode());
-	} // end of testLoginSuccess
-	
-	
-	
 
 } // end of class TestBackEnd

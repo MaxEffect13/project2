@@ -56,9 +56,6 @@ public class LoginController {
 		String password = usr.pass;
 		System.out.println("User:" + usr.user + "  Pass:" + usr.pass);
 		
-		// Hash the password for comparison. 
-		password = StringHasher.sha256Hash(password);
-		
 		// Wrap in a try catch block just in case there is an error. 
 		try {
 			// If either field is null, send 400 status for a bad request. 
@@ -66,6 +63,9 @@ public class LoginController {
 				response.sendError(400);
 				return;
 			}
+			
+			// Hash the password for comparison. 
+			password = StringHasher.sha256Hash(password);
 			
 			// Query the database for the user and user's password. 
 			// Get a user by it's id or null?
