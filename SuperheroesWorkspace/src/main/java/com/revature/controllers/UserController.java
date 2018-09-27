@@ -43,7 +43,7 @@ public class UserController {
 		try {
 			// Validate all the parameters exist
 			if (!jsonMap.containsKey("userId")) {
-				response.sendError(401);
+				response.sendError(400);
 				return null;
 			}
 			

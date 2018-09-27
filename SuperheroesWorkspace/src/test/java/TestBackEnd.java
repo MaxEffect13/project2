@@ -151,12 +151,22 @@ public class TestBackEnd {
 	public void testUserInfo() throws IOException {
 		login();
 		ObjectMapper om = new ObjectMapper();
-		HashMap test = om.readValue(
+		HashMap<String, Object> userMap = om.readValue(
 				makeRequest("/user", "POST", "{\"userId\":61}").getInputStream(), HashMap.class);
 
-		System.out.println(test);
+		assertEquals("test", userMap.get("username").toString());
+		assertEquals("test", userMap.get("email").toString());
+		assertEquals("", userMap.get("password").toString());
+//		System.out.println(test);
 	} // end of testUserInfo
 	
+	/** Tests that the user information can be retrieved. */
+	@Test
+	public void testUserBadParameter() throws IOException {
+		login();
+		ObjectMapper om = new ObjectMapper();
+		assertEquals(400, makeRequest("/user", "POST", "{\"badparam\":61}").getResponseCode());
+	} // end of testUserInfo
 	
 	
 	// ========================================================
