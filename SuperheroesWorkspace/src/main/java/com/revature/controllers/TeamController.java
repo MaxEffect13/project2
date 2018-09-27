@@ -191,8 +191,13 @@ public class TeamController {
 				return null;
 			}
 			
-			if(user.getRole().equals("y")) {
+			if(user.getRole().equals("n")&&teamDao.findTeamByUserId(userId).size()>5) {
 				
+				response.sendError(403);
+				return null;
+				
+			}
+			else{
 				// Create a new team, using the user id. 
 				Team newTeam = new Team();
 				newTeam.setUser(user);
@@ -203,18 +208,8 @@ public class TeamController {
 				
 				// Return the new team's ID
 				return newTeam.getId();
-			}
-			else{
-				if(teamDao.findTeamByUserId(userId).size()<5) {
-					Team newTeam = new Team();
-					newTeam.setUser(user);
-					newTeam.setName(teamName);
-					teamDao.addTeam(newTeam);
-			}
-				else {
-					response.sendError(403);
-					return null;
-				}
+					
+				
 			}
 		} catch(EntityNotFoundException ex) {
 			// If one of the entities doesn't have a valid id, send 410, GONE.
