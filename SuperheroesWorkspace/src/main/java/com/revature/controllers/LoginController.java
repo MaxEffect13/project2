@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.revature.models.MyUser;
-import com.revature.models.loginUsr;
+import com.revature.models.LoginUser;
 import com.revature.services.UserDAO;
 import com.revature.util.StringHasher;
 
@@ -48,50 +48,54 @@ public class LoginController {
 	@ResponseBody
 	@CrossOrigin
 	@PostMapping(value="/login", consumes=MediaType.APPLICATION_JSON_VALUE, produces=MediaType.APPLICATION_JSON_VALUE)
-	public void postLogin(@RequestBody loginUsr usr, 
+	public MyUser postLogin(@RequestBody LoginUser usr, 
 				HttpServletRequest request, HttpServletResponse response) {
 		
 		// Get the username and password parameters from the input json file
-		String username = usr.user;
-		String password = usr.pass;
-		System.out.println("User:" + usr.user + "  Pass:" + usr.pass);
+		String username = usr.getUser();
+		String password = usr.getPass();
+		System.out.println("User:" + username + "  Pass:" + password);
 		
-		// Hash the password for comparison. 
-		password = StringHasher.sha256Hash(password);
+		
 		
 		// Wrap in a try catch block just in case there is an error. 
 		try {
 			// If either field is null, send 400 status for a bad request. 
 			if (username == null || password == null) {
 				response.sendError(400);
-				return;
+				return null;
 			}
+			
+			// Hash the password for comparison. 
+			password = StringHasher.sha256Hash(password);
 			
 			// Query the database for the user and user's password. 
 			// Get a user by it's id or null?
 			MyUser user = userDao.findUserByUsernameAndPassword(username, password);
 			
 			
-			// If there are no users by that username, send a 401 code 
+			// If there are no users by that username and password, send a 401 code 
 			// signifying bad user/pass
 			if (user == null) {
 				response.sendError(401);
-				return;
+				return null;
 			}
 			
 			
 			// If the password hash doesn't match, send 401 code signifying bad 
 			// username / password
-			if (!user.getPassword().equals(password)) {
-				response.sendError(401);
-				return;
-			}
+//			if (!user.getPassword().equals(password)) {
+//				response.sendError(401);
+//				return null;
+//			}
 			
 			// Otherwise, the login was a success. So create a session with the 
 			// username. 
 			HttpSession session = request.getSession();
 			session.setAttribute(USER_SESSION_ATTR, user.getUsername());
 			session.setMaxInactiveInterval(SESSION_TIMEOUT);
+			
+			return user;
 			// Status code 200 is sent implicitly by returning naturally.
 		} catch (IOException ex) {
 			// If there was a problem, send a 500 code. 
@@ -99,6 +103,8 @@ public class LoginController {
 			//TODO: Add Logging module. 
 			ex.printStackTrace();
 		}
+		
+		return null;
 	} // end of postLogin
 	
 	

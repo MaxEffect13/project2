@@ -1,14 +1,20 @@
 package com.revature.controllers;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
+import javax.persistence.EntityNotFoundException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -18,6 +24,7 @@ import com.revature.models.Team;
 import com.revature.services.HeroDAO;
 import com.revature.services.TeamDAO;
 import com.revature.services.UserDAO;
+import com.revature.services.UserValidationService;
 import com.revature.util.TeamStatsHelper;
 
 @RestController
@@ -38,8 +45,37 @@ public class TeamController {
 	@Autowired
 	private HeroDAO heroDao;
 	
+	
+	/** Used to validate user credentials, and get user objects. */
+	@Autowired
+	private UserValidationService validService;
+	
+	
+	@GetMapping(value="/team/all", produces=MediaType.APPLICATION_JSON_VALUE)
+	public List<Team> getTeamById(HttpServletResponse response)
+	{
+		try {
+			// Attempt to get the team
+			List<Team> teams = teamDao.findAllTeams();
+			
+			// If the teams don't exist, send status code 410. 
+			if (teams == null) {
+				response.sendError(410);
+				return null;
+			}
+			
+			return teams;
+		} catch(IOException ex) {
+			// If an error occurs, attempt to send code 500. 
+			try {response.sendError(500);} catch (IOException e) {}
+			ex.printStackTrace();
+		}
+		return new LinkedList<>();
+	} // end of getTeamById
+	
+	
 	@GetMapping(value="/team", produces=MediaType.APPLICATION_JSON_VALUE)
-	public Team getTeamById(@RequestParam("teamId") Long teamId,
+	public Team getAllTeams(@RequestParam("teamId") Long teamId,
 							HttpServletResponse response)
 	{
 		try {
@@ -63,22 +99,82 @@ public class TeamController {
 	
 	
 	
-	@GetMapping(value="/team/create")
-	public Long createTeam(@RequestParam("name") String teamName,
+	@PostMapping(value="/team/byuser", consumes=MediaType.APPLICATION_JSON_VALUE)
+	public List<Team> getTeamsByUserId(@RequestBody Map<String, Object> json,
 			HttpServletRequest request, HttpServletResponse response) {
 		try {
-			// Attempt to get a session from the user. 
-			HttpSession session = request.getSession(false);
+			// If the provided json map doesn't contain the specified fields, 
+			// send a 400 status, BAD_REQUEST. 
+			if (!json.containsKey("userId"))
+			{
+				response.sendError(400, "Required JSON Parameters: teamName, userId");
+				return new LinkedList<>(); // Return an empty list instead of null
+			}
 			
-			// If there is not a session, throw a 401. 
-			if (session == null) {
+			// Get the parameters, which may be Integer or Long objects. 
+			long userId = ((Number) json.get("userId")).longValue();
+			
+			// Get the user Id associated with the user. 
+			MyUser user = userDao.findUserById(userId);
+			
+			// If the user credentials are not valid, send status 401. 
+			if (user == null) {
 				response.sendError(401);
+				return new LinkedList<>(); // Return an empty list instead of null
+			}
+			
+			// Create a new team, using the user id. 
+			List<Team> teams = teamDao.findTeamByUserId(userId);
+			
+			for (Team t : teams) {
+				System.out.println(t);
+			}
+			System.out.println("Heroes: " + teams.get(0).getHeroes());
+			System.out.println("Heroes: " + teams.get(0).getUser());
+			ArrayList<Team> arrTeams = new ArrayList<>();
+			
+			// Return the new team's ID
+			return arrTeams;
+		} catch(EntityNotFoundException ex) {
+			// If one of the entities doesn't have a valid id, send 410, GONE.
+			// Needs to be done here as the repository does lazy initialization. 
+			// This means we can't trap the actual call to the database. 
+			try {response.sendError(410);} catch (IOException e) {}
+		} catch(IOException ex) {
+			try {response.sendError(500);} catch (IOException e) {}
+			ex.printStackTrace();
+		}
+		return new LinkedList<>(); // Return an empty list instead of null
+	} // end of getTeamsByUserId
+	
+	
+	
+	
+	
+	@PostMapping(value="/team/create", consumes=MediaType.APPLICATION_JSON_VALUE)
+	public Long createTeam(@RequestBody Map<String, Object> json,
+			HttpServletRequest request, HttpServletResponse response) {
+		try {
+			// If the provided json map doesn't contain the specified fields, 
+			// send a 400 status, BAD_REQUEST. 
+			if (!json.containsKey("userId") || !json.containsKey("teamName"))
+			{
+				response.sendError(400, "Required JSON Parameters: teamName, userId");
 				return null;
 			}
 			
+			// Get the parameters, which may be Integer or Long objects. 
+			long userId = ((Number) json.get("userId")).longValue();
+			String teamName = ((String) json.get("teamName"));
+			
 			// Get the user Id associated with the user. 
-			MyUser user = userDao.findUserByUsername(
-					(String) session.getAttribute(LoginController.USER_SESSION_ATTR));
+			MyUser user = userDao.findUserById(userId);
+			
+			// If the user credentials are not valid, send status 401. 
+			if (user == null) {
+				response.sendError(401);
+				return null;
+			}
 			
 			// Create a new team, using the user id. 
 			Team newTeam = new Team();
@@ -90,85 +186,109 @@ public class TeamController {
 			
 			// Return the new team's ID
 			return newTeam.getId();
+		} catch(EntityNotFoundException ex) {
+			// If one of the entities doesn't have a valid id, send 410, GONE.
+			// Needs to be done here as the repository does lazy initialization. 
+			// This means we can't trap the actual call to the database. 
+			try {response.sendError(410);} catch (IOException e) {}
 		} catch(IOException ex) {
 			try {response.sendError(500);} catch (IOException e) {}
 			ex.printStackTrace();
-			return null;
 		}
+		return null;
 	} // end of createTeam
 	
 	
-	@GetMapping("/team/remove")
-	public Long removeTeam(@RequestParam("teamId") Long teamId, 
+	@PostMapping(value="/team/remove", consumes=MediaType.APPLICATION_JSON_VALUE)
+	public void removeTeam(@RequestBody Map<String, Object> json,
 							HttpServletRequest request, 
 							HttpServletResponse response) 
 	{
 		try {
-			// Attempt to get a session from the user. 
-			HttpSession session = request.getSession(false);
-			
-			// If there is not a session, throw a 401. 
-			if (session == null) {
-				response.sendError(401);
-				return null;
+			// If the provided json map doesn't contain the specified fields, 
+			// send a 400 status, BAD_REQUEST. 
+			if (!json.containsKey("userId") || !json.containsKey("teamId")) 
+			{
+				response.sendError(400, "Required JSON Parameters: teamId, userId");
+				return;
 			}
 			
+			// Get the parameters, which may be Integer or Long objects. 
+			long userId = ((Number) json.get("userId")).longValue();
+			long teamId = ((Number) json.get("teamId")).longValue();
+			
 			// Get the user Id associated with the user. 
-			MyUser user = userDao.findUserByUsername(
-					(String) session.getAttribute(LoginController.USER_SESSION_ATTR));
-						
+			MyUser user = userDao.findUserById(userId);
+			
+			// If the user credentials are not valid, send status 401. 
+			if (user == null) {
+				response.sendError(401);
+				return;
+			}
 			
 			
 			// Get the team associated with the provided teamId. 
 			Team team = teamDao.findTeamById(teamId);
 			
+			if (team == null) {
+				response.sendError(410);
+				return;
+			}
 			
 			// If the user id of the user matches the user id of the team, 
 			// remove the team
 			if (team.getUser().getId() == user.getId()) {
 				teamDao.deleteTeam(team);
-				return team.getId();
 			}
 			// Otherwise, send the 403 status code as the user isn't allowed 
 			// to delete that team. 
 			else {
 				response.sendError(403);
-				return null;
 			}
+		} catch(EntityNotFoundException ex) {
+			// If one of the entities doesn't have a valid id, send 410, GONE.
+			// Needs to be done here as the repository does lazy initialization. 
+			// This means we can't trap the actual call to the database. 
+			try {response.sendError(410);} catch (IOException e) {}
 		} catch(IOException ex) {
 			try {response.sendError(500);} catch (IOException e) {}
 			ex.printStackTrace();
-			return null;
 		}
-	} // end of createTeam
+	} // end of removeTeam
 	
 	
 	
-	@GetMapping("/team/addhero")
-	public void addHeroToTeam(@RequestParam("teamId") Long teamId, 
-							@RequestParam("heroId") Long heroId, 
+	@PostMapping(value="/team/addhero", consumes=MediaType.APPLICATION_JSON_VALUE)
+	public void addHeroToTeam(@RequestBody Map<String, Object> json,
 							HttpServletRequest request, 
 							HttpServletResponse response) 
 	{
 		try {
-			// Attempt to get a session from the user. 
-			HttpSession session = request.getSession(false);
-			
-			// If there is not a session, throw a 401. 
-			if (session == null) {
-				response.sendError(401);
+			// If the provided json map doesn't contain the specified fields, 
+			// send a 400 status, BAD_REQUEST. 
+			if (!json.containsKey("userId") || !json.containsKey("teamId") 
+					|| !json.containsKey("heroId")) 
+			{
+				response.sendError(400, "Required JSON Parameters: heroId, teamId, userId");
 				return;
 			}
 			
+			// Get the parameters, which may be Integer or Long objects. 
+			long userId = ((Number) json.get("userId")).longValue();
+			long teamId = ((Number) json.get("teamId")).longValue();
+			long heroId = ((Number) json.get("heroId")).longValue();
+			
 			// Get the user Id associated with the user. 
-			MyUser user = userDao.findUserByUsername(
-					(String) session.getAttribute(LoginController.USER_SESSION_ATTR));
+			MyUser user = userDao.findUserById(userId);
 			
 			// Get the hero associated with the hero id.
 			Hero hero = heroDao.findHeroById(heroId);
 			
 			// Get the team associated with the team id.
 			Team team = teamDao.findTeamById(teamId);
+			
+			System.out.println(team);
+			System.out.println(hero);
 			
 			// Check to make sure that the values are valid. 
 			if (team == null || hero == null) {
@@ -195,34 +315,47 @@ public class TeamController {
 			team.getHeroes().add(hero);
 			TeamStatsHelper.updateTeamStats(team);
 			teamDao.updateTeam(team);
+		} catch(EntityNotFoundException ex) {
+			// If one of the entities doesn't have a valid id, send 410, GONE.
+			// Needs to be done here as the repository does lazy initialization. 
+			// This means we can't trap the actual call to the database. 
+			try {response.sendError(410);} catch (IOException e) {}
 		} catch (IOException ex) {
 			try {response.sendError(500);} catch (IOException e) {}
 			ex.printStackTrace();
-			return;
 		}
 	} // end of addHeroToTeam
 	
 	
 	
-	@GetMapping("/team/removehero")
-	public void removeHeroFromTeam(@RequestParam("teamId") Long teamId, 
-							@RequestParam("heroId") Long heroId, 
+	@PostMapping(value="/team/removehero", consumes=MediaType.APPLICATION_JSON_VALUE)
+	public void removeHeroFromTeam(@RequestBody Map<String, Object> json,
 							HttpServletRequest request, 
 							HttpServletResponse response) 
 	{
 		try {
-			// Attempt to get a session from the user. 
-			HttpSession session = request.getSession(false);
-			
-			// If there is not a session, throw a 401. 
-			if (session == null) {
-				response.sendError(401);
+			// If the provided json map doesn't contain the specified fields, 
+			// send a 400 status, BAD_REQUEST. 
+			if (!json.containsKey("userId") || !json.containsKey("teamId") 
+					|| !json.containsKey("heroId")) 
+			{
+				response.sendError(400, "Required JSON Parameters: heroId, teamId, userId");
 				return;
 			}
 			
+			// Get the parameters, which may be Integer or Long objects. 
+			long userId = ((Number) json.get("userId")).longValue();
+			long teamId = ((Number) json.get("teamId")).longValue();
+			long heroId = ((Number) json.get("heroId")).longValue();
+			
 			// Get the user Id associated with the user. 
-			MyUser user = userDao.findUserByUsername(
-					(String) session.getAttribute(LoginController.USER_SESSION_ATTR));
+			MyUser user = userDao.findUserById(userId);
+			
+			// If the user credentials are not valid, send status 401. 
+			if (user == null) {
+				response.sendError(401);
+				return;
+			}
 			
 			// Get the hero associated with the hero id.
 			Hero hero = heroDao.findHeroById(heroId);
@@ -230,7 +363,7 @@ public class TeamController {
 			// Get the team associated with the team id.
 			Team team = teamDao.findTeamById(teamId);
 			
-			// Check to make sure that the values are valid. 
+			// If either is null, depending on repo implementation, send 410, GONE.
 			if (team == null || hero == null) {
 				response.sendError(410);
 				return;
@@ -251,13 +384,17 @@ public class TeamController {
 				TeamStatsHelper.updateTeamStats(team);
 				teamDao.updateTeam(team);
 			}
+		} catch(EntityNotFoundException ex) {
+			// If one of the entities doesn't have a valid id, send 410, GONE.
+			// Needs to be done here as the repository does lazy initialization. 
+			// This means we can't trap the actual call to the database. 
+			try {response.sendError(410);} catch (IOException e) {}
 		} catch (IOException ex) {
 			try {response.sendError(500);} catch (IOException e) {}
 			ex.printStackTrace();
-			return;
 		}
 	} // end of removeHeroFromTeam
-			
+	
 	
 	
 } // end of class TeamController

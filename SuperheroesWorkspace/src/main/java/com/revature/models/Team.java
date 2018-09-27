@@ -195,7 +195,7 @@ public class Team {
 	public String toString() {
 		return "Team [id=" + id + ", name=" + name + ", intelligence=" + intelligence + ", strength=" + strength
 				+ ", speed=" + speed + ", durability=" + durability + ", power=" + power + ", combat=" + combat
-				+ ", user=" + user + "]";
+				+ ", user=" + user + ", heroes=" + heroes + "]";
 	}
 	
 	
