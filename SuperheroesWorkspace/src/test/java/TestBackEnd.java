@@ -9,6 +9,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -16,6 +18,8 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class TestBackEnd {
@@ -149,7 +153,6 @@ public class TestBackEnd {
 	/** Tests that the user information can be retrieved. */
 	@Test
 	public void testUserInfo() throws IOException {
-		login();
 		ObjectMapper om = new ObjectMapper();
 		HashMap<String, Object> userMap = om.readValue(
 				makeRequest("/user", "POST", "{\"userId\":61}").getInputStream(), HashMap.class);
@@ -157,17 +160,226 @@ public class TestBackEnd {
 		assertEquals("test", userMap.get("username").toString());
 		assertEquals("test", userMap.get("email").toString());
 		assertEquals("", userMap.get("password").toString());
-//		System.out.println(test);
 	} // end of testUserInfo
 	
-	/** Tests that the user information can be retrieved. */
+	/** Tests that a bad parameter causes it to send a 400 code. */
 	@Test
 	public void testUserBadParameter() throws IOException {
-		login();
-		ObjectMapper om = new ObjectMapper();
 		assertEquals(400, makeRequest("/user", "POST", "{\"badparam\":61}").getResponseCode());
-	} // end of testUserInfo
+	} // end of testUserBadParameter
 	
+	/** Tests that a missing user causes it to send a 410 code. */
+	@Test
+	public void testUserMissingUser() throws IOException {
+		assertEquals(410, makeRequest("/user", "POST", "{\"userId\":-5}").getResponseCode());
+	} // end of testUserBadParameter
+	
+	/** Tests that a missing user causes it to send a 400 code. */
+	@Test
+	public void testUserNoParams() throws IOException {
+		assertEquals(400, makeRequest("/user", "POST", "{}").getResponseCode());
+	} // end of testUserNoParams
+	
+	
+	
+	
+	/** Tests that the create user function returns the correct status code. 
+	 * @throws IOException */
+	@Test
+	public void testCreateUserBadUsernameParam() throws IOException {
+		int status = 
+			makeRequest("/user/create", "POST", 
+					"{\"asdf\":\"test\", \"password\":\"test\", \"email\":\"test\"}"
+					).getResponseCode();
+		assertEquals(400, status);
+	} // end of testCreateUserBadUsernameParam
+	
+	/** Tests that the create user function returns the correct status code. 
+	 * @throws IOException */
+	@Test
+	public void testCreateUserBadPasswordParam() throws IOException {
+		int status = 
+			makeRequest("/user/create", "POST", 
+					"{\"username\":\"test\", \"asdf\":\"test\", \"email\":\"test\"}"
+					).getResponseCode();
+		assertEquals(400, status);
+	} // end of testCreateUserBadPasswordParam
+	
+	/** Tests that the create user function returns the correct status code. 
+	 * @throws IOException */
+	@Test
+	public void testCreateUserBadEmailParam() throws IOException {
+		int status = 
+			makeRequest("/user/create", "POST", 
+					"{\"username\":\"test\", \"password\":\"test\", \"asdf\":\"test\"}"
+					).getResponseCode();
+		assertEquals(400, status);
+	} // end of testCreateUserBadEmailParam
+	
+	
+	/** Tests that the create user function returns the correct status code. 
+	 * @throws IOException */
+	@Test
+	public void testCreateUserNameTaken() throws IOException {
+		int status = 
+			makeRequest("/user/create", "POST", 
+					"{\"username\":\"test\", \"password\":\"test\", \"email\":\"test\"}"
+					).getResponseCode();
+		assertEquals(401, status);
+	} // end of testCreateUserNameTaken
+	
+	
+	
+	/** Tests that the create user function makes a user. 
+	 * Requires the /user mapping to work. 
+	 * @throws IOException */
+	/*@Test
+	public void testCreateUser() throws IOException {
+		ObjectMapper om = new ObjectMapper();
+		String username;
+		Random rand = new Random();
+		HashMap<String, Object> userMap;
+		
+		// Find an available username
+		while(true) {
+			// Generate a random username
+			username = "testUser" + rand.nextInt();
+			
+			userMap = om.readValue(
+					makeRequest("/user", "POST", "{\"userId\":61}").getInputStream(), HashMap.class);
+			if (!userMap.get("username").toString().equals(username)) {
+				break;
+			}
+		}
+		
+		HttpURLConnection con = makeRequest("/user/create", "POST", 
+				"{\"username\":\"" + username + "\""
+						+ ", \"password\":\"test\""
+						+ ", \"email\":\"" + username + "-email\"}");
+		
+		
+		userMap = om.readValue(con.getInputStream(), HashMap.class);
+		int status = con.getResponseCode();
+		long userId = (long) userMap.get("id");
+		
+
+		
+		assertEquals(200, status);
+		
+		userMap = om.readValue(
+				makeRequest("/user", "POST", "{\"userId\":61}").getInputStream(), HashMap.class);
+
+		assertEquals(username, userMap.get("username").toString());
+		assertEquals("test", userMap.get("email").toString());
+		assertEquals("", userMap.get("password").toString());
+	} // end of testCreateUserNameTaken
+*/	
+	
+	
+	
+	/** Tests the update user function to be sure it's working correctly. 
+	 * @throws IOException */
+	@Test
+	public void testUpdateUserBadUsername() throws IOException {
+		int status = 
+				makeRequest("/user/update", "POST", 
+						"{\"asdf\":\"test\", "
+						+ "\"password\":\"test\", "
+						+ "\"email\":\"test\", "
+						+ "\"role\":\"y\"}"
+						).getResponseCode();
+		assertEquals(400, status);
+	} // testUpdateUserBadUsername
+	
+	/** Tests the update user function to be sure it's working correctly. 
+	 * @throws IOException */
+	@Test
+	public void testUpdateUserBadPassword() throws IOException {
+		int status = 
+				makeRequest("/user/update", "POST", 
+						"{\"username\":\"test\", "
+						+ "\"asdf\":\"test\", "
+						+ "\"email\":\"test\", "
+						+ "\"role\":\"y\"}"
+						).getResponseCode();
+		assertEquals(400, status);
+	} // testUpdateUserBadPassword
+	
+	/** Tests the update user function to be sure it's working correctly. 
+	 * @throws IOException */
+	@Test
+	public void testUpdateUserBadEmail() throws IOException {
+		int status = 
+				makeRequest("/user/update", "POST", 
+						"{\"username\":\"test\", "
+						+ "\"password\":\"test\", "
+						+ "\"asdf\":\"test\", "
+						+ "\"role\":\"y\"}"
+						).getResponseCode();
+		assertEquals(400, status);
+	} // testUpdateUserBadEmail
+	
+	
+	/** Tests the update user function to be sure it's working correctly. 
+	 * @throws IOException */
+	@Test
+	public void testUpdateUserBadRole() throws IOException {
+		int status = 
+				makeRequest("/user/update", "POST", 
+						"{\"username\":\"test\", "
+						+ "\"password\":\"test\", "
+						+ "\"email\":\"test\", "
+						+ "\"asdf\":\"y\"}"
+						).getResponseCode();
+		assertEquals(400, status);
+	} // testUpdateUserBadRole
+	
+	
+	/** Tests the update user function to be sure it's working correctly. 
+	 * @throws IOException */
+	@Test
+	public void testUpdateUser() throws IOException {
+//		Map<String, Object> userMap = getUserJson("test", "test");
+//		String oUsername = (String) userMap.get("username");
+//		String oPassword = "test";
+//		String oEmail = (String) userMap.get("email");
+		String oUsername = "test";
+		String oPassword = "test";
+		String oEmail = "test";
+		Map<String, Object> userMap;
+		
+		int status = 
+				makeRequest("/user/update", "POST", 
+						"{\"username\":\"" + oUsername + "\", "
+						+ "\"password\":\"1234\", "
+						+ "\"email\":\"test12345\", "
+						+ "\"role\":\"y\"}"
+						).getResponseCode();
+		assertEquals(200, status);
+		
+		userMap = getUserJson("test", "1234");
+		
+		assertEquals("test", userMap.get("username").toString());
+//		assertEquals("", userMap.get("password").toString());
+		assertEquals("test12345", userMap.get("email").toString());
+		assertEquals("y", userMap.get("role").toString());
+		
+		status = 
+				makeRequest("/user/update", "POST", 
+						"{\"username\":\"" + oUsername + "\", "
+						+ "\"password\":\"" + oPassword + "\", "
+						+ "\"email\":\"" + oEmail + "\", "
+						+ "\"role\":\"n\"}"
+						).getResponseCode();
+		assertEquals(200, status);
+		
+		userMap = getUserJson(oUsername, oPassword);
+		
+		assertEquals("test", userMap.get("username").toString());
+//		assertEquals("", userMap.get("password").toString());
+		assertEquals("test", userMap.get("email").toString());
+		assertEquals("n", userMap.get("role").toString());
+	} // testUpdateUserBadRole
 	
 	// ========================================================
 	// Helper Functions
@@ -186,6 +398,19 @@ public class TestBackEnd {
 		// Make sure we can logout
 		assertEquals(200, makeRequest("/logout", "POST", ""
 						).getResponseCode());
+	}
+	
+	
+	public Map<String, Object> getUserJson(String username, String password) throws IOException {
+		
+		ObjectMapper om = new ObjectMapper();
+		HashMap<String, Object> userMap = om.readValue(
+				makeRequest("/login", "POST", 
+				"{\"user\":\"" + username + "\", \"pass\":\"" + password + "\"}"
+				).getInputStream(), HashMap.class);
+		
+		
+		return userMap;
 	}
 
 } // end of class TestBackEnd
