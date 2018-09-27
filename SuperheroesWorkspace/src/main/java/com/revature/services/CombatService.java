@@ -8,5 +8,5 @@ import com.revature.models.Team;
 
 @Service
 public interface CombatService {
-	public Team compareStats(Team team1, Team team2) throws IOException;
+	public Team compareStats(Team team1, Team team2);
 }
