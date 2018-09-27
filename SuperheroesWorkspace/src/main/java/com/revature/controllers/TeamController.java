@@ -181,7 +181,8 @@ public class TeamController {
 			long userId = ((Number) json.get("userId")).longValue();
 			String teamName = ((String) json.get("teamName"));
 			
-			// Get the user Id associated with the user. 
+			
+			// Get the user Id and user role associated with the user. 
 			MyUser user = userDao.findUserById(userId);
 			
 			// If the user credentials are not valid, send status 401. 
@@ -190,16 +191,31 @@ public class TeamController {
 				return null;
 			}
 			
-			// Create a new team, using the user id. 
-			Team newTeam = new Team();
-			newTeam.setUser(user);
-			newTeam.setName(teamName);
-			
-			// Add the new team to the team repository, which auto-generates an id.
-			teamDao.addTeam(newTeam);
-			
-			// Return the new team's ID
-			return newTeam.getId();
+			if(user.getRole().equals("y")) {
+				
+				// Create a new team, using the user id. 
+				Team newTeam = new Team();
+				newTeam.setUser(user);
+				newTeam.setName(teamName);
+				
+				// Add the new team to the team repository, which auto-generates an id.
+				teamDao.addTeam(newTeam);
+				
+				// Return the new team's ID
+				return newTeam.getId();
+			}
+			else{
+				if(teamDao.findTeamByUserId(userId).size()<5) {
+					Team newTeam = new Team();
+					newTeam.setUser(user);
+					newTeam.setName(teamName);
+					teamDao.addTeam(newTeam);
+			}
+				else {
+					response.sendError(403);
+					return null;
+				}
+			}
 		} catch(EntityNotFoundException ex) {
 			// If one of the entities doesn't have a valid id, send 410, GONE.
 			// Needs to be done here as the repository does lazy initialization. 
@@ -324,11 +340,19 @@ public class TeamController {
 				return;
 			}
 			
+			
+			
 			// If we passed all other checks, add the hero to the team, and
 			// update the database. Also update the stats of the team. 
+			if(team.getHeroes().size()<6) {
 			team.getHeroes().add(hero);
 			TeamStatsHelper.updateTeamStats(team);
 			teamDao.updateTeam(team);
+			}
+			else {
+				response.sendError(403);
+				return;
+			}
 		} catch(EntityNotFoundException ex) {
 			// If one of the entities doesn't have a valid id, send 410, GONE.
 			// Needs to be done here as the repository does lazy initialization. 
