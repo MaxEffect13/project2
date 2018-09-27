@@ -308,6 +308,8 @@ public class TeamController {
 			long teamId = ((Number) json.get("teamId")).longValue();
 			long heroId = ((Number) json.get("heroId")).longValue();
 			
+			System.out.println("U:" + userId + "  T:" + teamId + "  H:" + heroId);
+			
 			// Get the user Id associated with the user. 
 			MyUser user = userDao.findUserById(userId);
 			
@@ -319,6 +321,8 @@ public class TeamController {
 			
 			System.out.println(team);
 			System.out.println(hero);
+			
+			System.out.println("asdf");
 			
 			// Check to make sure that the values are valid. 
 			if (team == null || hero == null) {
