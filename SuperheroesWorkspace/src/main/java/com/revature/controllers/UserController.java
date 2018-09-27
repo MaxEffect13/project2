@@ -7,6 +7,7 @@ import javax.persistence.EntityNotFoundException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -33,6 +34,21 @@ public class UserController {
 	 * isn't premium'.  */
 	public static final String DEFAULT_ROLE = "n";
 	
+	/** A logger for this class. */
+	private static final Logger LOG = Logger.getLogger(UserController.class);
+	
+	
+	
+	/** A string representing the user id key from input json. */
+	private static final String USER_ID = "userId";
+	/** A string representing the username key from input json. */
+	private static final String USERNAME = "username";
+	/** A string representing the password key from input json. */
+	private static final String PASSWORD = "password";
+	/** A string representing the email key from input json. */
+	private static final String EMAIL = "email";
+	/** A string representing the user role key from input json. */
+	private static final String ROLE = "role";
 	
 	
 	@PostMapping(value="/user", produces=MediaType.APPLICATION_JSON_VALUE, consumes=MediaType.APPLICATION_JSON_VALUE)
@@ -42,13 +58,19 @@ public class UserController {
 	{
 		try {
 			// Validate all the parameters exist
-			if (!jsonMap.containsKey("userId")) {
+			if (!jsonMap.containsKey(USER_ID)) {
+				LOG.debug("missing param: '" + USER_ID + "'  RequestBody:" + jsonMap.toString());
 				response.sendError(400);
 				return null;
 			}
 			
+			// Log the user id 
+			LOG.debug("Request Body: " + jsonMap.toString());
+			
 			// Get the username
-			long userId = ((Number)jsonMap.get("userId")).longValue();
+			long userId = ((Number)jsonMap.get(USER_ID)).longValue();
+			
+			
 			
 			// If the request has a session, get the user associated with it. 
 			MyUser user = userDao.findUserById(userId);
@@ -61,7 +83,8 @@ public class UserController {
 			// If one of the entities doesn't have a valid id, send 410, GONE.
 			// Needs to be done here as the repository does lazy initialization. 
 			// This means we can't trap the actual call to the database. 
-			try {response.sendError(410);} catch (IOException e) {}
+			try {response.sendError(410);} catch (IOException e) {/* Do nothing on failing to send 500*/}
+			LOG.debug("User Id " + jsonMap.get(USER_ID) + " not in the database.");
 		}
 		return null;
 	} // end of getUser
@@ -85,21 +108,25 @@ public class UserController {
 	{
 		try {
 			// Validate all the parameters exist
-			if (!jsonMap.containsKey("username")
-					|| !jsonMap.containsKey("password")
-					|| !jsonMap.containsKey("email")) {
+			if (!jsonMap.containsKey(USERNAME)
+					|| !jsonMap.containsKey(PASSWORD)
+					|| !jsonMap.containsKey(EMAIL)) {
+				LOG.debug("Missing Param(s) '" + USERNAME + "', '" 
+								+ PASSWORD + "', '" + EMAIL 
+								+ "'  RequestBody: " + jsonMap.toString());
 				response.sendError(400);
 				return;
 			}
 			
 			// Get the parameters from the json
-			String username = (String) jsonMap.get("username");
-			String password = (String) jsonMap.get("password");
-			String email = (String) jsonMap.get("email");
+			String username = (String) jsonMap.get(USERNAME);
+			String password = (String) jsonMap.get(PASSWORD);
+			String email = (String) jsonMap.get(EMAIL);
 			
 			
 			//If the username is taken, send a 401 status to signal no authorization
 			if (userDao.findUserByUsername(username) != null) {
+				LOG.debug("Username '" + username + "' is already in the database");
 				response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
 				return;
 			}
@@ -111,14 +138,17 @@ public class UserController {
 			user.setPassword(StringHasher.sha256Hash(password));
 			user.setRole(DEFAULT_ROLE);
 			
-			
+			// Add the user to the database
 			userDao.addUser(user);
-		} catch (IOException ex) {
+			
+			// Log that the user was added
+			LOG.debug("User Added: " + user.toString());
+		} catch (Exception ex) {
 			// If a problem occurred, attempt to send a status 500. 
 			try {
 				response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-			} catch(IOException ex2) {}
-			ex.printStackTrace();
+			} catch(IOException ex2) {/* Do nothing on failing to send 500*/}
+			LOG.error("Exception!", ex);
 		}
 	} // end of createUser
 	
@@ -129,42 +159,51 @@ public class UserController {
 	{
 		try {
 			// Validate all the parameters exist
-			if (!jsonMap.containsKey("username")
-					|| !jsonMap.containsKey("password")
-					|| !jsonMap.containsKey("email")
-					|| !jsonMap.containsKey("role")) {
+			if (!jsonMap.containsKey(USERNAME)
+					|| !jsonMap.containsKey(PASSWORD)
+					|| !jsonMap.containsKey(EMAIL)
+					|| !jsonMap.containsKey(ROLE)) {
+				LOG.debug("Missing Param(s) '" + USERNAME + "', '" 
+						+ PASSWORD + "', '" + EMAIL + "', '" + ROLE
+						+ "'  RequestBody: " + jsonMap.toString());
 				response.sendError(400);
 				return;
 			}
 			
+			LOG.debug("Request Body: " + jsonMap.toString());
+			
 			// Get the parameters from the json
-			String username = (String) jsonMap.get("username");
-			String password = (String) jsonMap.get("password");
-			String email = (String) jsonMap.get("email");
-			String role = (String) jsonMap.get("role");
+			String username = (String) jsonMap.get(USERNAME);
+			String password = (String) jsonMap.get(PASSWORD);
+			String email = (String) jsonMap.get(EMAIL);
+			String role = (String) jsonMap.get(ROLE);
 			
 			// Attempt to find the user by username
 			MyUser user = userDao.findUserByUsername(username);
 			
 			//If the username isn't found, send a 401 status to signal no authorization
 			if (user == null) {
+				LOG.debug("Username '" + username + "' is NOT in the database");
 				response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
 				return;
 			}
 			
-			// If the username isn't taken, add a new user. 
+			// If the exists, update it with new parameters. 
 			user.setEmail(email);
 			user.setPassword(StringHasher.sha256Hash(password));
 			user.setRole(role);
 			
-			
+			// Update the user on the database side
 			userDao.updateUser(user);
-		} catch (IOException ex) {
+			
+			// Log that a user was updated. 
+			LOG.debug("User Updated: " + user);
+		} catch (Exception ex) {
 			// If a problem occurred, attempt to send a status 500. 
 			try {
 				response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-			} catch(IOException ex2) {}
-			ex.printStackTrace();
+			} catch(IOException ex2) {/* Do nothing on failing to send 500*/}
+			LOG.error("Exception!", ex);
 		}
 	} // end of postUpdateUser
 	
