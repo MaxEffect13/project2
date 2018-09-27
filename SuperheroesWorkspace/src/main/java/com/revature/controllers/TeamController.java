@@ -12,10 +12,12 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.revature.models.Hero;
@@ -28,6 +30,8 @@ import com.revature.services.UserValidationService;
 import com.revature.util.TeamStatsHelper;
 
 @RestController
+@CrossOrigin
+@ResponseBody
 public class TeamController {
 	
 	/** The interface used to interact with the teams repository. This is 
@@ -61,10 +65,15 @@ public class TeamController {
 			// If the teams don't exist, send status code 410. 
 			if (teams == null) {
 				response.sendError(410);
-				return null;
+				return new LinkedList<>();
 			}
 			
 			return teams;
+		} catch(EntityNotFoundException ex) {
+			// If one of the entities doesn't have a valid id, send 410, GONE.
+			// Needs to be done here as the repository does lazy initialization. 
+			// This means we can't trap the actual call to the database. 
+			try {response.sendError(410);} catch (IOException e) {}
 		} catch(IOException ex) {
 			// If an error occurs, attempt to send code 500. 
 			try {response.sendError(500);} catch (IOException e) {}
@@ -89,12 +98,17 @@ public class TeamController {
 			}
 			
 			return team;
+		} catch(EntityNotFoundException ex) {
+			// If one of the entities doesn't have a valid id, send 410, GONE.
+			// Needs to be done here as the repository does lazy initialization. 
+			// This means we can't trap the actual call to the database. 
+			try {response.sendError(410);} catch (IOException e) {}
 		} catch(IOException ex) {
 			// If an error occurs, attempt to send code 500. 
 			try {response.sendError(500);} catch (IOException e) {}
 			ex.printStackTrace();
-			return null;
 		}
+		return null;
 	} // end of getTeamById
 	
 	
@@ -126,15 +140,15 @@ public class TeamController {
 			// Create a new team, using the user id. 
 			List<Team> teams = teamDao.findTeamByUserId(userId);
 			
-			for (Team t : teams) {
-				System.out.println(t);
-			}
-			System.out.println("Heroes: " + teams.get(0).getHeroes());
-			System.out.println("Heroes: " + teams.get(0).getUser());
-			ArrayList<Team> arrTeams = new ArrayList<>();
+//			for (Team t : teams) {
+//				System.out.println(t);
+//			}
+//			System.out.println("Heroes: " + teams.get(0).getHeroes());
+//			System.out.println("Heroes: " + teams.get(0).getUser());
+//			ArrayList<Team> arrTeams = new ArrayList<>();
 			
 			// Return the new team's ID
-			return arrTeams;
+			return teams;
 		} catch(EntityNotFoundException ex) {
 			// If one of the entities doesn't have a valid id, send 410, GONE.
 			// Needs to be done here as the repository does lazy initialization. 
