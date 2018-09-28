@@ -103,7 +103,7 @@ public class UserController {
 	 * 					Allows custom responses.
 	 */
 	@PostMapping("/user/create")
-	public void postCreateUser(@RequestBody Map<String, Object> jsonMap,
+	public MyUser postCreateUser(@RequestBody Map<String, Object> jsonMap,
 							HttpServletResponse response) 
 	{
 		try {
@@ -115,7 +115,7 @@ public class UserController {
 								+ PASSWORD + "', '" + EMAIL 
 								+ "'  RequestBody: " + jsonMap.toString());
 				response.sendError(400);
-				return;
+				return null;
 			}
 			
 			// Get the parameters from the json
@@ -128,7 +128,7 @@ public class UserController {
 			if (userDao.findUserByUsername(username) != null) {
 				LOG.debug("Username '" + username + "' is already in the database");
 				response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
-				return;
+				return null;
 			}
 			
 			// If the username isn't taken, add a new user. 
@@ -143,12 +143,15 @@ public class UserController {
 			
 			// Log that the user was added
 			LOG.debug("User Added: " + user.toString());
+			
+			return user;
 		} catch (Exception ex) {
 			// If a problem occurred, attempt to send a status 500. 
 			try {
 				response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			} catch(IOException ex2) {/* Do nothing on failing to send 500*/}
 			LOG.error("Exception!", ex);
+			return null;
 		}
 	} // end of createUser
 	
