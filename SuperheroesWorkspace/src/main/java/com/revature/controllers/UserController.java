@@ -172,6 +172,7 @@ public class UserController {
 			
 			LOG.debug("Request Body: " + jsonMap.toString());
 			
+			
 			// Get the parameters from the json
 			String username = (String) jsonMap.get(USERNAME);
 			String password = (String) jsonMap.get(PASSWORD);

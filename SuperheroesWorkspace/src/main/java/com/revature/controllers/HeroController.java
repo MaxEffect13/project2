@@ -70,8 +70,6 @@ public class HeroController {
 										@RequestParam("high") long high,
 										HttpServletResponse response) throws IOException 
 	{
-		// TODO: Currently need a dao method to search for a range of heroes. 
-		// TODO: in the meantime, this will have to do. 
 		// Create a list large enough to hold all the results
 		List<Hero> heroes = new ArrayList<>((int)(high-low+1));
 		

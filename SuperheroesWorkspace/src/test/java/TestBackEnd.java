@@ -381,6 +381,72 @@ public class TestBackEnd {
 		assertEquals("n", userMap.get("role").toString());
 	} // testUpdateUserBadRole
 	
+	
+	
+	
+	
+	
+	// ========================================================
+	// Hero Tests
+	// ========================================================
+	
+	/** Tests to make sure that /allheroes returns something. 
+	 * Can make more robust later. 
+	 * @throws IOException */
+	@Test
+	public void testGetAllHeroes() throws IOException {
+		// TODO: Actually check if heroes were returned
+		int status = 
+				makeRequest("/allheroes", "GET", "").getResponseCode();
+		assertEquals(200, status);
+	} // testGetAllHeroes
+//	
+//
+//	@Test
+//	public void testGetHeroById() throws IOException {
+//		int status = 
+//				makeRequest("/hero?id=1", "GET", "").getResponseCode();
+//		assertEquals(200, status);
+//		status = 
+//				makeRequest("/hero?id=717", "GET", "").getResponseCode();
+//		assertEquals(200, status);
+//	} // testGetHeroById
+//	
+//	@Test
+//	public void testGetHeroByIdBadHero() throws IOException {
+//		int status = 
+//				makeRequest("/hero?id=1000000", "GET", "").getResponseCode();
+//		assertEquals(410, status);
+//	} // testGetHeroByIdBadHero
+//	
+//	
+//	@Test
+//	public void testGetHeroRange() throws IOException {
+//		int status = 
+//				makeRequest("/rangeheroes?low=1&high=20", "GET", "").getResponseCode();
+//		assertEquals(200, status);
+//		status = 
+//				makeRequest("/rangeheroes?id=717", "GET", "").getResponseCode();
+//		assertEquals(200, status);
+//	} // testGetHeroById
+	
+	
+	
+	
+	// ========================================================
+	// Team Tests
+	// ========================================================
+	
+	@Test
+	public void testGetAllTeams() throws IOException {
+		// TODO: Actually check if teams were returned
+		int status = 
+				makeRequest("/team/all", "GET", "").getResponseCode();
+		assertEquals(200, status);
+	} // testGetAllHeroes
+	
+	
+	
 	// ========================================================
 	// Helper Functions
 	// ========================================================
@@ -412,5 +478,13 @@ public class TestBackEnd {
 		
 		return userMap;
 	}
+	
+	
+	
+	 
+	
+	
+	
+	
 
 } // end of class TestBackEnd
