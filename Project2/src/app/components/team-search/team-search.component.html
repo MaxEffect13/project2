@@ -1,0 +1,53 @@
+<html>
+    <head>
+        <link rel="icon" href="https://melbournechapter.net/images/super-hero-mask-clipart-2.png">
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
+        <title>{{title}}</title> 
+    </head>
+
+    <body>
+        <nav>
+            <ul class="justify-content-end">
+                <li>
+                    <a href="http://localhost:4200/home">Search the Codex</a>
+                </li>
+                <li *ngIf="session">
+                    <a href="http://localhost:4200/userProfile"><i class="fas fa-user"></i> Account</a>
+                </li>
+                <li *ngIf="session">
+                    <a href="" (click)="logout()">Log Out <i class="fas fa-sign-out-alt"></i></a>
+                </li>
+                <li *ngIf="!session">
+                    <a href="http://localhost:4200/register">Register</a>
+                </li>
+                <li *ngIf="!session">
+                    <a href="http://localhost:4200/login">Log In</a>
+                </li>
+            </ul>
+        </nav>
+        <div class="container" style="background-color: rgba(178,178,178,0.95)">
+            <div class="layer">
+                <!--<select>
+                    <option selected>Team Name</option>
+                    <option>User Name</option>
+                </select>-->
+                <input [(ngModel)]="searchText" id="teamSearch" type="text" placeholder="Search for Teams" name="search" style="text-indent: 10px">    
+                <table class="table table-striped table-bordered table-hover table-sm table-dark" style="margin-top: 10px">
+                    <thead>
+                        <tr>
+                            <th>Team ID</th>
+                            <th>Team Name</th>
+                            <th>Team Founder</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor = "let team of teams | filter : searchText">
+                            <td (click)="battleSearch(team.id)">{{ team.id }}</td>
+                            <td (click)="battleSearch(team.id)">{{ team.name }}</td>
+                            <td (click)="battleSearch(team.id)">{{ team.user.username}}</td>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </body>
+</html>

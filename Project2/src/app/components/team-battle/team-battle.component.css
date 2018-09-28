@@ -1,0 +1,27 @@
+#members {
+    border: 2px black solid;
+    width: 50%;
+    z-index: -1;
+}
+
+#team2 {
+    z-index: -1;
+    position: static;
+    margin-top: -497px;
+    /*margin-left: 414px;*/
+    width: 100%;
+    text-align: right;
+    direction: rtl;
+}
+
+#winner {
+    position: relative;
+    bottom: 570px;
+    background-color: black;
+    color: white;
+}
+
+.stats {
+    border: 2px black solid;
+    width: 50%;
+}

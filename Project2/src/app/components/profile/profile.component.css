@@ -1,0 +1,17 @@
+.center-screen {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+  }
+
+#teams {
+    border: 1px solid black;
+    width: 75%;
+}
+
+#teamName {
+    position:relative;
+    /*bottom: 44px;*/
+}

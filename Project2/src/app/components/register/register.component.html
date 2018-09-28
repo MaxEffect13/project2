@@ -1,0 +1,46 @@
+
+<html>
+  <head>
+      <link rel="icon" href="https://melbournechapter.net/images/super-hero-mask-clipart-2.png">
+      <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
+  </head>
+
+  <body>
+      <nav>
+          <ul class="justify-content-end">
+              <li>
+                  <a href="http://localhost:4200/home">Search the Codex</a>
+              </li>
+              <li>
+                  <a href="http://localhost:4200/teamSearch"> Search the Teams</a>
+              </li>
+              <li>
+                  <a href="http://localhost:4200/userProfile"><i class="fas fa-user"></i> Account</a>
+              </li>
+          </ul>
+      </nav>
+      <div class="container" style="background-color: rgba(178, 178, 178, 0.95); width: 50%; height: 300px">
+          <div class="layer center-screen">
+              <div style="position: relative; right: 60px; top: 20px; width:70%">
+                  <div class="form-group">
+                    <input type="email" id="email" [(ngModel)]="email" required placeholder="Email" class="form-control">
+                  </div>
+                  <div class="form-group">
+                      <input type="text" id="username" [(ngModel)]="username" required placeholder="Username" class="form-control">
+                  </div>
+                  <div class="form-group">
+                      <input type="password" id="password" [(ngModel)]="password" required placeholder="Password" class="form-control">
+                  </div>
+                  <div class="form-group">
+                    <input type="password" required placeholder="Confirm Password" class="form-control">
+                  </div>
+                  <div class="form-group">
+                      <button type="submit" class="btn btn-danger" (click)="register(username, password)">Submit</button>
+                  </div>
+              </div>
+          </div>
+
+      </div>
+  </body>
+
+</html>

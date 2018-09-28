@@ -1,0 +1,70 @@
+<html>
+  <head>
+    <link rel="icon" href="https://melbournechapter.net/images/super-hero-mask-clipart-2.png">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
+    <title>Your Profile</title>
+  </head>
+
+  <body>
+    <nav>
+      <ul class="justify-content-end">
+        <li>
+          <a href="http://localhost:4200/home">Search the Codex</a>
+        </li>
+        <li *ngIf="session">
+          <a href="http://localhost:4200/userProfile"><i class="fas fa-user"></i> Account</a>
+      </li>
+      <li *ngIf="session">
+          <a href="" (click)="logout()">Log Out <i class="fas fa-sign-out-alt"></i></a>
+      </li>
+      <li *ngIf="!session">
+          <a href="http://localhost:4200/register">Register</a>
+      </li>
+      <li *ngIf="!session">
+          <a href="http://localhost:4200/login">Log In</a>
+      </li>
+      </ul>
+    </nav>
+    <div class="container">
+      <div class="layer center-screen" style="background-color: rgba(159, 159, 159, 0.95)">
+        <div>
+          <div class="form-group"> 
+            <h3><strong>Email</strong></h3>       
+            <input type="text" id="email" class="form-control" disabled style="text-align: center" [(ngModel)]="email">
+          </div>
+          <div class="form-group">
+            <h3><strong>Username</strong></h3>
+            <input type="text" id="username" class="form-control" disabled style="text-align: center" [(ngModel)]="username">
+            <p hidden id="no-no" style="color: red">Unfortunately you can't change your username!</p>
+          </div>
+          <div class="form-group">
+            <h3><strong>Password</strong></h3>
+            <input type="text" id="password" class="form-control" disabled style="text-align: center" [(ngModel)]="password">
+          </div>
+          <div class="form-group">
+            <button type="button" id="edit" class="btn btn-primary" style="display: inline" (click)="edit()"><strong>Edit <i class="fas fa-pencil-alt"></i></strong></button>
+            <button type="button" id="save" class="btn btn-save" style="display: none" (click)="save()"><strong>Save <i class="fas fa-save"></i></strong></button>
+          </div>
+          <div class="form-group">
+            <button *ngIf='!isLegend' type="button" class="btn btn-warning" (click)="legend()"><strong><i class="fas fa-gem"></i> Become a Legend</strong></button>
+          </div>
+        </div>
+        <div id="teamHeading" style="position:relative; top: 20px">
+          <h3 style="position:relative; right:240px"><strong>Your Teams</strong></h3>
+          <input [(ngModel)]="newTeam" id="teamName" type="text" class="form-control" style="position:relative; bottom: 44px; width: 235px" placeholder="Enter a Team Name">
+          <button type="button" class="btn btn-success" style="position: absolute; bottom: 44px; left: 235px" (click)="createTeam()">Create New Team <i class="fas fa-hands-helping"></i></button>
+        </div>
+        <div id="teams">
+          <table class="table table-striped table-bordered table-hover table-sm table-dark">
+            <tbody>
+              <tr *ngFor="let team of teams">
+                <td>{{ team.name }}</td>
+                <td><button class="btn btn-danger" (click)="battleSearch(team.id)">Battle</button>&nbsp;&nbsp;<button class="btn btn-warning" (click)="removeTeam(team.id)">Remove Team</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

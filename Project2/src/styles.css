@@ -1,0 +1,65 @@
+/* You can add global styles to this file, and also import other style files */
+html, body {
+    height: 100%;
+  }
+  
+  body {
+    background-image: url(https://static1.squarespace.com/static/51b3dc8ee4b051b96ceb10de/t/5408bd11e4b05b809962d3e7/1409858834174/marvel-vs-dc-costume-clash-infographic?format=2500w) ;
+    background-position: center center;
+    background-repeat:  no-repeat;
+    background-attachment: fixed;
+    background-size:  cover;
+    background-color: #999;
+  }
+
+  nav {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 1;
+}
+
+ul {
+  list-style: none;
+ /* background-image: url(https://wallpapercave.com/wp/CToGD7f.jpg);*/
+ background-color: black;
+  margin: 0 -15px 0 -15px;
+  padding: 15px 15px 15px 0;
+  display: flex;
+  justify-content: left;
+}
+
+li {
+  display: block;
+  padding: 0 15px 0 15px;
+}
+nav a {
+  color: white;
+  text-decoration: none;
+  padding: 5px;
+}
+
+li a:hover {
+  background-color: #a0a0a0;
+  text-decoration: none;
+  font-weight: bold;
+  color: black;
+}
+
+.layer {
+  /*position: inline;*/
+  top: 0;
+  left: 0;
+  width: 74.5%;
+  height: auto;
+ margin: 100px 120px -65px 153px;
+  z-index: -1;
+}
+
+/*.center-screen {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}*/

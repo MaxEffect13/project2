@@ -1,0 +1,97 @@
+<html>
+  <head>
+      <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous"> 
+  </head>
+
+  <body>
+    <nav>
+      <ul class="justify-content-end">
+        <li>
+          <a href="http://localhost:4200/home">Search the Codex</a>
+        </li>
+        <!-- <li>
+          <a href="http://localhost:4200/teamSearch"> Search the Teams</a>
+        </li> -->
+        <li *ngIf='session'>
+          <a href="http://localhost:4200/userProfile"><i class="fas fa-user"></i> Account</a>
+        </li>
+        <li *ngIf='session'>
+          <a href="" (click)="logout()">Log Out <i class="fas fa-sign-out-alt"></i></a>
+        </li>
+        <li *ngIf="!session">
+          <a href="http://localhost:4200/register">Register</a>
+        </li>
+        <li *ngIf="!session">
+          <a href="http://localhost:4200/login">Log In</a>
+        </li>
+      </ul>
+    </nav>
+    <div class="container">
+      <div class="layer" style="background-color: rgba(178, 178, 178, 0.95); background-size: auto">
+        <div id="team1" style="z-index: -1; position: static">
+          <h1>Team 1</h1>
+          <h3>Avengers</h3>
+          <div>
+            <div id="members">
+              <h4>Team Members</h4>
+              <ol>
+                <li>Iron Man</li>
+                <li>Captain America</li>
+                <li>Thor</li>
+                <li>Hulk</li>
+                <li>Hawkeye</li>
+                <li>Ant-Man</li>
+              </ol>
+            </div>
+            <div class="stats">
+              <h4>PowerStats&copy;</h4>
+              <ol>
+                <li>Intelligence</li>
+                <li>Strength</li>
+                <li>Durability</li>
+                <li>Speed</li>
+                <li>Power</li>
+                <li>Combat</li>
+              </ol>
+              <ol>
+                <li></li>
+              </ol>
+            </div>
+          </div>
+        </div>
+        <div id="team2">
+            <h1>Team 2</h1>
+            <h3>Justice League</h3>
+            <div>
+              <div id="members">
+                <h4>Team Members</h4>
+                <ol>
+                  <li>Batman</li>
+                  <li>Superman</li>
+                  <li>Wonder Woman</li>
+                  <li>Cyborg</li>
+                  <li>Aquaman</li>
+                  <li>Green Arrow</li>
+                </ol>
+              </div>
+              <div class="stats">
+                <h4>&copy;PowerStats</h4>
+                <ol>
+                  <li>Intelligence</li>
+                  <li>Strength</li>
+                  <li>Durability</li>
+                  <li>Speed</li>
+                  <li>Power</li>
+                  <li>Combat</li>
+                </ol>
+              </div>
+          </div>
+        </div>
+        <img style="z-index: 0; position: relative; bottom: 498px; right: 70px;" src="https://mbtskoudsalg.com/images/death-battle-logo-png-3.png">
+        <div id="winner">
+          <h2 style="text-align: center;"><strong>THE WINNER IS: </strong><br>{{winner}}</h2>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

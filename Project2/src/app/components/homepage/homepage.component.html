@@ -1,0 +1,57 @@
+<html>
+    <head>
+        <link rel="icon" href="https://melbournechapter.net/images/super-hero-mask-clipart-2.png">
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
+        <title>{{title}}</title>
+    </head>
+
+    <body>
+        <nav>
+            <ul class="justify-content-end">
+                <li>
+                    <a href="http://localhost:4200/home">Search the Codex</a>
+                </li>
+                <!-- <li>
+                    <a href="http://localhost:4200/teamSearch"> Search the Teams</a>
+                </li> -->
+                <li *ngIf="session">
+                    <a href="http://localhost:4200/userProfile"><i class="fas fa-user"></i> Account</a>
+                </li>
+                <li *ngIf="session">
+                    <a href="" (click)="logout()">Log Out <i class="fas fa-sign-out-alt"></i></a>
+                </li>
+                <li *ngIf="!session">
+                    <a href="http://localhost:4200/register">Register</a>
+                </li>
+                <li *ngIf="!session">
+                    <a href="http://localhost:4200/login">Log In</a>
+                </li>
+            </ul>
+        </nav>
+        <!--<div class="bg">-->
+            <div class="container" style="background-color: rgba(178,178,178,0.95);">
+                <div class="layer" style="background: none">
+                    <input [(ngModel)]="searchText" placeholder="Search the Codex" name="search" id="heroSearch" style="text-indent: 10px">    
+                    <table class="table table-striped table-bordered table-hover table-sm table-dark" style="margin-top: 10px">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Real Name</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let hero of heroes | filter : searchText">
+                                <td (click)="select(hero.id)">{{ hero.id }}</td>
+                                <td (click)="select(hero.id)">{{ hero.name }}</td>
+                                <td (click)="select(hero.id)">{{ hero.biography["full-name"] }} </td>
+                                <td (click)="select(hero.id)"><img style="height: 100px; width: 75px" src="{{ hero.image.url }}"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        <!--</div>-->
+    </body>
+</html>
