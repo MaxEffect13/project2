@@ -8,6 +8,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,11 +19,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.revature.models.Hero;
 import com.revature.services.HeroDAO;
-import com.revature.services.HeroDAOImpl;
 
 @RestController
 public class HeroController {
-	
+	private static final Logger LOG = Logger.getLogger(UserController.class);
 	/** The interface used to interact with the heroes repository. This is 
 	 * automatically instantiated. */
 	@Autowired
@@ -49,6 +49,7 @@ public class HeroController {
 			// Return the hero corresponding to the provided id.
 			return heroDao.findHeroById(id); 
 		} catch (javax.persistence.EntityNotFoundException ex) {
+			LOG.debug("Couldn't find hero with id: " + id);
 			// If there wasn't an entity return null.
 			//TODO: This is temporary until the documentation and DAO can be 
 			// updated. 
@@ -83,6 +84,7 @@ public class HeroController {
 			Hero hero = heroDao.findHeroById(i);
 			// If this hero wasn't in the database, return a 410 status code. 
 			if (hero == null) {
+				LOG.debug("Couldn't find hero with id: " + i);
 				response.sendError(410);
 				return new LinkedList<>();
 			}

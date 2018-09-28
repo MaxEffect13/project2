@@ -10,6 +10,7 @@ import javax.persistence.EntityNotFoundException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -33,6 +34,8 @@ import com.revature.util.TeamStatsHelper;
 @CrossOrigin
 @ResponseBody
 public class TeamController {
+	
+	private static final Logger LOG = Logger.getLogger(TeamController.class);
 	
 	/** The interface used to interact with the teams repository. This is 
 	 * automatically instantiated. */
@@ -64,6 +67,7 @@ public class TeamController {
 			
 			// If the teams don't exist, send status code 410. 
 			if (teams == null) {
+				LOG.debug("findAllTeams() method called, no teams found");
 				response.sendError(410);
 				return new LinkedList<>();
 			}
@@ -93,6 +97,7 @@ public class TeamController {
 			
 			// If the team doesn't exist, send status code 410. 
 			if (team == null) {
+				LOG.debug("Team called by id, no team found for id: '" + teamId);
 				response.sendError(410);
 				return null;
 			}
@@ -187,12 +192,13 @@ public class TeamController {
 			
 			// If the user credentials are not valid, send status 401. 
 			if (user == null) {
+				LOG.debug("User credentials are not valid for user with id: " + userId);
 				response.sendError(401);
 				return null;
 			}
 			
 			if(user.getRole().equals("n")&&teamDao.findTeamByUserId(userId).size()>5) {
-				
+				LOG.debug("Non-premium user with id: " + userId + "tried to create more than 5 teams");
 				response.sendError(403);
 				return null;
 				
@@ -234,6 +240,7 @@ public class TeamController {
 			// send a 400 status, BAD_REQUEST. 
 			if (!json.containsKey("userId") || !json.containsKey("teamId")) 
 			{
+				LOG.debug("missing params: userId and teamId'" + "'  RequestBody:" + json.toString());
 				response.sendError(400, "Required JSON Parameters: teamId, userId");
 				return;
 			}

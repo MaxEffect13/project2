@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
@@ -21,7 +22,7 @@ import com.revature.util.StringHasher;
 
 @Controller
 public class LoginController {
-	
+	private static final Logger LOG = Logger.getLogger(TeamController.class);
 	/** A string representing the name of the attribute in a session that 
 	 * corresponds to a user's username. */
 	public static final String USER_SESSION_ATTR = "username";
@@ -100,8 +101,8 @@ public class LoginController {
 		} catch (IOException ex) {
 			// If there was a problem, send a 500 code. 
 			try {response.sendError(500);} catch (IOException ex2) {}
-			//TODO: Add Logging module. 
-			ex.printStackTrace();
+			
+			LOG.error("exception", ex);
 		}
 		
 		return null;
